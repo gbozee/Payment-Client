@@ -1,9 +1,9 @@
 /** @jsx jsx */
-import styled from "@emotion/styled";
 import { css, jsx } from "@emotion/core";
 import { Box, Flex, Card, Text } from "@rebass/emotion";
 import { Button } from "./primitives";
 import React from "react";
+import { saveState } from "../localStorage";
 
 const Input = ({ label, type = "text", value, onChange, isValid }) => {
   return (
@@ -115,11 +115,7 @@ export class LoginPage extends React.Component {
             onChange={this.onChange("password")}
             isValid={this.isValid(this.state.toggleError, "password")}
           />
-          <Button
-            disabled={this.state.loading}
-            width={1}
-            type="submit"
-          >
+          <Button disabled={this.state.loading} width={1} type="submit">
             Login
           </Button>
         </form>

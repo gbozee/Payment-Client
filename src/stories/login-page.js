@@ -8,9 +8,11 @@ import { Button, Welcome } from "@storybook/react/demo";
 import LoginPage from "../pages/LoginPage";
 import WListPage, { ListItem, ListGroup } from "../pages/WListPage";
 import WDetailPage from "../pages/WDetailPage";
-import DataProvider from "../DataProvider";
+import DataProvider, { ProtectedRoute, DataContext } from "../DataProvider";
 import { MemoryRouter as Router, Route, Switch } from "react-router";
-
+import { Dialog } from "../pages/primitives/Modal";
+import { testData, testDataTransactions } from "./test_data";
+import { saveState } from "../localStorage";
 storiesOf("Welcome", module).add("to Storybook", () => (
   <Welcome showApp={linkTo("Button")} />
 ));
@@ -29,12 +31,53 @@ storiesOf("Button", module)
 
 const WithRouter = ({ children, initialIndex = 0, test = true }) => {
   return (
-    <DataProvider test={test}>
+    <DataProvider
+      test={test}
+      testData={{
+        transactions: testDataTransactions(),
+        withdrawals: testData(),
+        bookingTransaction: {
+          amount: "N2000",
+          status: "TUTOR_HIRE",
+          date: "2018-10-10 9:20:33",
+          order: "AA101"
+        }
+      }}
+      authenticateUser={token => new Promise(resolve => resolve(true))}
+    >
       <Router
-        initialEntries={["/withdrawals", "/withdrawals/1004/transactions"]}
+        initialEntries={[
+          "/withdrawals",
+          "/withdrawals/1004/transactions",
+          "/withdrawals/1004/transactions/AA102"
+        ]}
         initialIndex={initialIndex}
       >
-        <Switch>{children}</Switch>
+        <Switch>
+          <Route
+            path="/login"
+            render={props => {
+              return (
+                <DataContext.Consumer>
+                  {({ dispatch, actions }) => {
+                    return (
+                      <LoginPage
+                        login={props =>
+                          dispatch({ type: actions.LOGIN_USER, value: props })
+                        }
+                        toNextPage={() => {
+                          saveState({ token: "TESTDATA_TOKEN" });
+                          props.history.push("/withdrawals");
+                        }}
+                      />
+                    );
+                  }}
+                </DataContext.Consumer>
+              );
+            }}
+          />
+          {children}
+        </Switch>
       </Router>
     </DataProvider>
   );
@@ -55,19 +98,43 @@ storiesOf("Pages", module)
   ))
   .add("Withdrawal List Page", () => (
     <WithRouter test={false}>
-      <Route
+      <ProtectedRoute
         path="/withdrawals"
         exact
         render={() => {
           return <WListPage detailPageUrl={order => `/withdrawals/${order}`} />;
         }}
       />
-      <Route path="/withdrawals/:order" component={WDetailPage} />
+      <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
     </WithRouter>
   ))
   .add("Withdrawal Detail Page", () => (
     <WithRouter initialIndex={1}>
-      <Route path="/withdrawals/:order" component={WDetailPage} />
+      <ProtectedRoute
+        path="/withdrawals"
+        exact
+        render={() => {
+          return <WListPage detailPageUrl={order => `/withdrawals/${order}`} />;
+        }}
+      />
+      <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
+    </WithRouter>
+  ))
+  .add("Transaction Detail Page", () => (
+    <WithRouter initialIndex={2}>
+      <ProtectedRoute
+        path="/withdrawals"
+        exact
+        render={() => {
+          return <WListPage detailPageUrl={order => `/withdrawals/${order}`} />;
+        }}
+      />
+      <ProtectedRoute
+        path="/withdrawals/:order"
+        render={props => (
+          <WDetailPage transactions={testDataTransactions()} {...props} />
+        )}
+      />
     </WithRouter>
   ));
 
@@ -80,4 +147,5 @@ storiesOf("Components", module)
       rightSection="10:00 am"
     />
   ))
-  .add("List Group", () => <ListGroup name="December, 12 2018" />);
+  .add("List Group", () => <ListGroup name="December, 12 2018" />)
+  .add("Dialog", () => <Dialog modalIsOpen>Are you sure</Dialog>);

@@ -4,9 +4,9 @@ import { Box, Flex, Button, Text, Link } from "@rebass/emotion";
 import React from "react";
 import format from "date-fns/format";
 
-export function getDate(date) {
+export function getDate(date, short = false) {
   let dd = new Date(date);
-  return format(dd, "MMMM D, YYYY");
+  return format(dd, short ? "MMM D, YYYY" : "MMMM D, YYYY");
 }
 export const ListGroup = ({ name }) => {
   return (
@@ -21,6 +21,7 @@ export const ListItem = ({
   heading,
   subHeading,
   rightSection,
+  onClick,
   ...rest
 }) => {
   let WLink = rest.Link || Link;
@@ -47,9 +48,10 @@ export const ListItem = ({
       </Flex>
     </Flex>
   );
-  return to ? (
+  return Boolean(to) || Boolean(onClick) ? (
     <WLink
       to={to}
+      onClick={onClick}
       href={to}
       css={css`
         text-decoration: none;

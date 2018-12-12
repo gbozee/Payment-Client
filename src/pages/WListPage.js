@@ -45,7 +45,7 @@ export class WListPage extends React.Component {
   }
   fetchList = (refresh = false) => {
     let { dispatch, actions } = this.context;
-    dispatch({ type: actions.GET_WITHDRAWALS, value: refresh }, data => {
+    dispatch({ type: actions.GET_WITHDRAWALS, value: refresh }).then(data => {
       this.setState({ data });
     });
   };
