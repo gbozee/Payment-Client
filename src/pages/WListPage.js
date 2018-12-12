@@ -70,7 +70,20 @@ export class WListPage extends React.Component {
             Refresh
           </Button>
         </Flex>
-        {this.renderItemsInGroups()}
+        {this.state.data.length > 0 ? (
+          this.renderItemsInGroups()
+        ) : (
+          <Flex
+            css={css`
+              align-items: center;
+            `}
+            flexDirection="column"
+          >
+            <Text fontSize={5}>
+              Hit the refresh button to try again or check your network
+            </Text>
+          </Flex>
+        )}
       </Flex>
     );
   }

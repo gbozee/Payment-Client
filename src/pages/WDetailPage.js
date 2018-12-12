@@ -22,11 +22,14 @@ class TransactionDetail extends React.Component {
   state = {
     confirm: false
   };
+  componentDidMount() {
+    this.props.getBookingTransaction();
+  }
   deleteTransaction = () => {
     this.setState({ confirm: false });
   };
   render() {
-    let { detail, booking_transactions } = this.props;
+    let { detail, booking_transaction } = this.props;
     return (
       <Flex flexDirection="column">
         <Flex
@@ -61,12 +64,12 @@ class TransactionDetail extends React.Component {
         </Flex>
         <Flex mb={4} flexDirection="column">
           <ListGroup name="Booking Transaction" />
-          {booking_transactions &&
-            Object.keys(booking_transactions).length > 0 && (
+          {booking_transaction &&
+            Object.keys(booking_transaction).length > 0 && (
               <ListItem
-                heading={booking_transactions.amount}
-                subHeading={booking_transactions.status}
-                rightSection={getDate(booking_transactions.date)}
+                heading={booking_transaction.amount}
+                subHeading={booking_transaction.status}
+                rightSection={getDate(booking_transaction.date)}
               />
             )}
         </Flex>
@@ -126,10 +129,15 @@ export class WDetailPage extends React.Component {
     }).then(data => {
       this.setState({ transactions: data });
     });
-    if (Boolean(result)) {
-      this.setState({ data: result });
+    if (this.props.getWithdrawal) {
+      this.setState({ data: this.props.getWithdrawal(match.params.order) });
     } else {
-      history.push("/withdrawals");
+      if (Boolean(result)) {
+        this.setState({ data: result });
+      } else {
+        history.push("/withdrawals");
+      }
+      //should only happen in test scenarios
     }
   }
   makePayment = () => {
@@ -262,6 +270,11 @@ export class WDetailPage extends React.Component {
                       detail={detail}
                       booking_transaction={this.state.booking_transaction}
                       deleteTransaction={this.deleteTransaction}
+                      getBookingTransaction={() =>
+                        this.getBookingTransaction(
+                          props.match.params.transaction_id
+                        )
+                      }
                       loading={this.state.loading}
                       {...props}
                     />

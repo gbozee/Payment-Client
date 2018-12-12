@@ -11,8 +11,9 @@ import WDetailPage from "../pages/WDetailPage";
 import DataProvider, { ProtectedRoute, DataContext } from "../DataProvider";
 import { MemoryRouter as Router, Route, Switch } from "react-router";
 import { Dialog } from "../pages/primitives/Modal";
-import { testData, testDataTransactions } from "./test_data";
-import { saveState } from "../localStorage";
+import { testData, testDataTransactions } from "../adapters/test_data";
+import devAdapter from "../adapters/dev";
+import testServerAdapter from "../adapters/test";
 storiesOf("Welcome", module).add("to Storybook", () => (
   <Welcome showApp={linkTo("Button")} />
 ));
@@ -33,16 +34,8 @@ const WithRouter = ({ children, initialIndex = 0, test = true }) => {
   return (
     <DataProvider
       test={test}
-      testData={{
-        transactions: testDataTransactions(),
-        withdrawals: testData(),
-        bookingTransaction: {
-          amount: "N2000",
-          status: "TUTOR_HIRE",
-          date: "2018-10-10 9:20:33",
-          order: "AA101"
-        }
-      }}
+      adapter={testServerAdapter}
+      // adapter={devAdapter}
       authenticateUser={token => new Promise(resolve => resolve(true))}
     >
       <Router
@@ -66,7 +59,6 @@ const WithRouter = ({ children, initialIndex = 0, test = true }) => {
                           dispatch({ type: actions.LOGIN_USER, value: props })
                         }
                         toNextPage={() => {
-                          saveState({ token: "TESTDATA_TOKEN" });
                           props.history.push("/withdrawals");
                         }}
                       />
@@ -102,7 +94,11 @@ storiesOf("Pages", module)
         path="/withdrawals"
         exact
         render={() => {
-          return <WListPage detailPageUrl={order => `/withdrawals/${order}`} />;
+          return (
+            <WListPage
+              detailPageUrl={order => `/withdrawals/${order}/transactions`}
+            />
+          );
         }}
       />
       <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
@@ -117,7 +113,15 @@ storiesOf("Pages", module)
           return <WListPage detailPageUrl={order => `/withdrawals/${order}`} />;
         }}
       />
-      <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
+      <ProtectedRoute
+        path="/withdrawals/:order"
+        render={props => (
+          <WDetailPage
+            getWithdrawal={order => testData().find(x => x.order === order)}
+            {...props}
+          />
+        )}
+      />
     </WithRouter>
   ))
   .add("Transaction Detail Page", () => (
@@ -132,7 +136,11 @@ storiesOf("Pages", module)
       <ProtectedRoute
         path="/withdrawals/:order"
         render={props => (
-          <WDetailPage transactions={testDataTransactions()} {...props} />
+          <WDetailPage
+            getWithdrawal={order => testData().find(x => x.order === order)}
+            transactions={testDataTransactions()}
+            {...props}
+          />
         )}
       />
     </WithRouter>

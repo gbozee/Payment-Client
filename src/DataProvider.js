@@ -74,12 +74,15 @@ export class DataProvider extends React.Component {
     context: {
       state: {
         auth: false,
-        withdrawals: this.props.test ? this.props.testData.withdrawals : []
+        withdrawals: []
       },
       dispatch: this.dispatch,
       actions
     }
   };
+  getAdapter() {
+    return this.props.adapter;
+  }
   updateState = obj => {
     let { context } = this.state;
     this.setState({
@@ -91,12 +94,18 @@ export class DataProvider extends React.Component {
     if (!Boolean(refresh) && withdrawals.length > 0) {
       return new Promise(resolve => resolve(withdrawals));
     }
-    let { testData } = this.props;
-    return new Promise(resolve => resolve(testData.withdrawals));
+    return this.getAdapter()
+      .getAllWithdrawals()
+      .then(data => {
+        this.updateState({ withdrawals: data });
+        return data;
+      })
+      .catch(err => {
+        throw err;
+      });
   };
   getToken() {
-    let { test } = this.props;
-    let data = test ? { token: "TESTDATATOKEN" } : loadState();
+    let data = loadState();
     if (Boolean(data)) {
       return data.token;
     }
@@ -117,43 +126,46 @@ export class DataProvider extends React.Component {
   };
   makePayment = order => {
     let { withdrawals } = this.state.context.state;
-    return new Promise((resolve, reject) => {
-      this.updateState({
-        withdrawals: withdrawals.filter(x => x.order !== order)
+    return this.getAdapter()
+      .makePayment(order)
+      .then(() => {
+        this.updateState({
+          withdrawals: withdrawals.filter(x => x.order !== order)
+        });
+      })
+      .catch(error => {
+        throw error;
       });
-      resolve();
-    });
   };
   deleteWithdrawal = order => {
     let { withdrawals } = this.state.context.state;
-    return new Promise((resolve, reject) => {
-      this.updateState({
-        withdrawals: withdrawals.filter(x => x.order !== order)
+    return this.getAdapter()
+      .deleteWithdrawal(order)
+      .then(data => {
+        this.updateState({
+          withdrawals: withdrawals.filter(x => x.order !== order)
+        });
       });
-      resolve();
-    });
   };
   getWithdrawalDetail = order => {
     return this.state.context.state.withdrawals.find(x => x.order === order);
   };
   fetchBookingTransaction = booking_order => {
-    let { testData } = this.props;
-    return new Promise(resolve => resolve(testData.bookingTransaction));
+    return this.getAdapter().getBookingTransaction(booking_order);
   };
   loginUser = ({ email, password }) => {
-    let { test } = this.props;
-    saveState({ token: "" });
-    this.updateState({ auth: true });
-    return new Promise(resolve => {
-      resolve();
-    });
+    return this.getAdapter()
+      .login(email, password)
+      .then(data => {
+        saveState({ token: data });
+        this.updateState({ auth: true });
+      });
   };
   getWithdrawalTransactions = withdrawal_order => {
-    let { testData } = this.props;
-    return new Promise(resolve => resolve(testData.transactions));
+    return this.getAdapter().getTransactions(withdrawal_order);
   };
   deleteTransaction = order => {
-    return new Promise(resolve => resolve({}));
+    return this.getAdapter().deleteTransaction(order);
   };
   render() {
     return (
