@@ -3,7 +3,6 @@ import { css, jsx } from "@emotion/core";
 import { Box, Flex, Card, Text } from "@rebass/emotion";
 import { Button } from "./primitives";
 import React from "react";
-import { saveState } from "../localStorage";
 
 const Input = ({ label, type = "text", value, onChange, isValid }) => {
   return (

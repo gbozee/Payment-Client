@@ -4,7 +4,7 @@ import { Flex, Text, Heading } from "@rebass/emotion";
 import React from "react";
 import { DataContext } from "../DataProvider";
 import { Route, Switch, Redirect } from "react-router";
-import { DialogButton } from "./primitives";
+import { DialogButton } from "../shared/primitives";
 
 import { ListGroup, ListItem, getDate } from "./reusables";
 const DetailItem = ({ label, children }) => {

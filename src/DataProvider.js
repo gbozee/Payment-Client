@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router";
-import { HomePageSpinner } from "./pages/primitives/Spinner";
+import { HomePageSpinner } from "./shared/primitives/Spinner";
 import { loadState, saveState } from "./localStorage";
 export const DataContext = React.createContext({
   state: {},

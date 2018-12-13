@@ -5,12 +5,12 @@ import { action } from "@storybook/addon-actions";
 import { linkTo } from "@storybook/addon-links";
 
 import { Button, Welcome } from "@storybook/react/demo";
-import LoginPage from "../pages/LoginPage";
+import LoginPage from "../shared/LoginPage";
 import WListPage, { ListItem, ListGroup } from "../pages/WListPage";
 import WDetailPage from "../pages/WDetailPage";
 import DataProvider, { ProtectedRoute, DataContext } from "../DataProvider";
 import { MemoryRouter as Router, Route, Switch } from "react-router";
-import { Dialog } from "../pages/primitives/Modal";
+import { Dialog } from "../shared/primitives/Modal";
 import { testData, testDataTransactions } from "../adapters/test_data";
 import devAdapter from "../adapters/dev";
 import testServerAdapter from "../adapters/test";
@@ -34,8 +34,8 @@ const WithRouter = ({ children, initialIndex = 0, test = true }) => {
   return (
     <DataProvider
       test={test}
-      adapter={testServerAdapter}
-      // adapter={devAdapter}
+      // adapter={testServerAdapter}
+      adapter={devAdapter}
       authenticateUser={token => new Promise(resolve => resolve(true))}
     >
       <Router
