@@ -121,45 +121,136 @@ export function testDataTransactions() {
 
 export const hiredData = [
   {
-    order: 101,
+    order: "RSET323",
     name: "Jamie Novak",
     email: "jamie@example.com",
     amount: "N20,000",
     date: "2018-10-12 14:10:33"
   },
   {
-    order: 102,
+    order: "GED482BCOO132",
     name: "Shola James",
     email: "shola@example.com",
     amount: "N30,000",
     date: "2018-9-12 14:10:33"
   },
   {
-    order: 103,
+    order: "GED482BCOO134",
+    name: "Shola James",
+    email: "shola@example.com",
+    amount: "N30,000",
+    date: "2018-9-12 14:10:33"
+  },
+  {
+    order: "GED482BCOO135",
+    name: "Shola James",
+    email: "shola@example.com",
+    amount: "N30,000",
+    date: "2018-9-12 14:10:33"
+  },
+  {
+    order: "GED482BCOO136",
+    name: "Shola James",
+    email: "shola@example.com",
+    amount: "N30,000",
+    date: "2018-9-12 14:10:33"
+  },
+  {
+    order: "GED482BCCDD",
     name: "Tope Oluwa",
     email: "tope@example.com",
     amount: "N40,000",
     date: "2018-10-12 14:10:33"
   },
   {
-    order: 104,
+    order: "BBCCDD231",
     name: "Kenny Kalak",
     email: "kenny@example.com",
     amount: "N20,500",
     date: "2018-9-12 14:10:33"
   },
   {
-    order: 105,
+    order: "AAD10211",
     name: "Biola Ojodu",
     email: "biola@example.com",
     amount: "N50,000",
     date: "2018-7-12 14:10:33"
   },
   {
-    order: 106,
+    order: "AABBCCDD101",
     name: "Godwin Alogi",
     email: "godwin@example.com",
     amount: "N22,000",
     date: "2018-10-12 14:10:33"
+  },
+  {
+    order: "OPDES323",
+    name: "Dotun 101",
+    email: "dotsman@example.com",
+    amount: "N22,000",
+    date: "2018-10-12 14:10:33"
+  },
+  {
+    order: "YAB324D",
+    name: "Peace Pastor",
+    email: "peace@example.com",
+    amount: "N22,000",
+    date: "2018-10-12 14:10:33"
+  },
+  {
+    order: "XYDE323",
+    name: "Shope Alogi",
+    email: "shopses@example.com",
+    amount: "N22,000",
+    date: "2018-10-12 14:10:33"
   }
 ];
+
+export const VerifiedTransactions = {
+  "12/03/2018": [
+    {
+      method: "Paystack",
+      order: "AABBCCDD101",
+      amount: "20000"
+    },
+
+    {
+      method: "UBA Bank",
+      order: "AAD10211",
+      amount: "20000"
+    },
+    {
+      method: "GT Bank",
+      order: "BBCCDD231",
+      amount: "20000"
+    },
+    {
+      method: "Zenith Bank",
+      order: "GED482BCCDD",
+      amount: "20000"
+    }
+  ],
+  "13/05/2018": [
+    {
+      method: "Paystack",
+      order: "XYDE323",
+      amount: "20000"
+    },
+
+    {
+      method: "UBA Bank",
+      order: "YAB324D",
+      amount: "20000"
+    },
+    {
+      method: "GT Bank",
+      order: "OPDES323",
+      amount: "20000"
+    },
+    {
+      method: "Zenith Bank",
+      order: "RSET323",
+      amount: "20000"
+    }
+  ]
+};

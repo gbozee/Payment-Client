@@ -27,3 +27,12 @@ export const clearState = () => {
     console.log(err);
   }
 };
+
+export const getFragment = (key, defaultParam = {}) => {
+  let state = loadState() || {};
+  return state[key] || defaultParams;
+};
+export const saveFragment = obj => {
+  let state = loadState() || {};
+  saveState({ ...state, ...obj });
+};

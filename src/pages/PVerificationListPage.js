@@ -40,7 +40,13 @@ class FromTo extends React.Component {
   }
 }
 
-const DateFilter = ({ onChange, onSearchChange }) => {
+export const DateFilter = ({
+  onChange,
+  onSearchChange,
+  displayDate = true,
+  onKeyDown = () => {},
+  onFilterChange = () => {}
+}) => {
   return (
     <Flex justifyContent="space-between">
       <Box
@@ -52,14 +58,36 @@ const DateFilter = ({ onChange, onSearchChange }) => {
         `}
       >
         <Input
-          onBlur={onSearchChange}
+          onChange={onSearchChange}
+          onKeyDown={onKeyDown}
           isValid
           placeholder="Search either email or order "
         />
       </Box>
-      <Flex flexDirection="column">
-        <FromTo onChange={onChange} />
-      </Flex>
+      {displayDate && (
+        <>
+          <Flex flexDirection="column">
+            <FromTo onChange={onChange} />
+          </Flex>
+          <select
+            css={css`
+              height: 36px;
+
+              align-self: flex-end;
+              margin-bottom: 16px;
+              margin-left: 20px;
+            `}
+            onChange={onFilterChange}
+          >
+            {[
+              { value: "", label: "Select Filter" },
+              { value: "verified", label: "Verified Transactions" }
+            ].map(option => (
+              <option value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </>
+      )}
     </Flex>
   );
 };
@@ -68,7 +96,7 @@ export const PVerificationListItem = ({
   subHeading,
   date,
   rightSection,
-  verified = true,
+  verified = false,
   to,
   ...rest
 }) => {
@@ -121,6 +149,11 @@ export class PVerificationListPage extends React.Component {
       }
     );
   };
+  transactionVerified = order => {
+    let { dispatch, actions } = this.context;
+    let records = dispatch({ type: actions.GET_VERIFIED_TRANSACTIONS });
+    return records.includes(order);
+  };
   onDateFilter = ({ from, to }) => {
     this.setState({ dateFilter: { from, to } });
   };
@@ -147,6 +180,7 @@ export class PVerificationListPage extends React.Component {
               subHeading={transaction.email}
               rightSection={transaction.amount}
               to={this.props.detailPageUrl(transaction.order)}
+              verified={this.transactionVerified(transaction.order)}
               Link={Link}
             />
           ))}

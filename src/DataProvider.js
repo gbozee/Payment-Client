@@ -17,7 +17,8 @@ const actions = {
   TOKEN_EXIST: "TOKEN_EXIST",
   LOGIN_USER: "LOGIN_USER",
   GET_HIRED_TRANSACTIONS: "GET_HIRED_TRANSACTIONS",
-  TRANSACTION_DETAIL: "TRANSACTION_DETAIL"
+  TRANSACTION_DETAIL: "TRANSACTION_DETAIL",
+  GET_VERIFIED_TRANSACTIONS: "GET_VERIFIED_TRANSACTIONS"
 };
 export class DataProvider extends React.Component {
   dispatch = action => {
@@ -33,7 +34,9 @@ export class DataProvider extends React.Component {
       [actions.AUTHENTICATE]: this.authenticateUser,
       [actions.LOGIN_USER]: this.loginUser,
       [actions.GET_HIRED_TRANSACTIONS]: this.fetchHiredTransactions,
-      [actions.TRANSACTION_DETAIL]: this.getTransactionDetail
+      [actions.TRANSACTION_DETAIL]: this.getTransactionDetail,
+      [actions.GET_VERIFIED_TRANSACTIONS]: this
+        .getAllOrdersForVerifiedTransactions
     };
     if (this.props.test) {
       console.log(action);
@@ -45,7 +48,8 @@ export class DataProvider extends React.Component {
       state: {
         auth: false,
         withdrawals: [],
-        hired_transactions: []
+        hired_transactions: [],
+        verified_transactions: {}
       },
       dispatch: this.dispatch,
       actions
@@ -54,6 +58,15 @@ export class DataProvider extends React.Component {
   getAdapter() {
     return this.props.adapter;
   }
+  componentDidMount() {
+    this.updateState({
+      verified_transactions: this.getAdapter().loadVerifications()
+    });
+  }
+  saveVerifiedTransactions = () => {
+    let { verified_transactions } = this.state.context.state;
+    return this.getAdapter().saveVerifications(verifications);
+  };
   updateState = obj => {
     let { context } = this.state;
     this.setState({
@@ -153,6 +166,10 @@ export class DataProvider extends React.Component {
   };
   deleteTransaction = order => {
     return this.getAdapter().deleteTransaction(order);
+  };
+  getAllOrdersForVerifiedTransactions = () => {
+    let { verified_transactions } = this.state.context.state;
+    return [].concat(...Object.values(verified_transactions)).map(x => x.order);
   };
   render() {
     return (

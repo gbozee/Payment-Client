@@ -9,6 +9,7 @@ import LoginPage from "../shared/LoginPage";
 import WListPage, { ListItem, ListGroup } from "../pages/WListPage";
 import PVerificationListPage from "../pages/PVerificationListPage";
 import PVerificationDetailPage from "../pages/PVerificationDetailPage";
+import VTransactionPage from "../pages/VTransactionPage";
 import WDetailPage from "../pages/WDetailPage";
 import DataProvider, { ProtectedRoute, DataContext } from "../DataProvider";
 import { MemoryRouter as Router, Route, Switch } from "react-router";
@@ -46,7 +47,8 @@ const WithRouter = ({ children, initialIndex = 0, test = true }) => {
           "/withdrawals/1004/transactions",
           "/withdrawals/1004/transactions/AA102",
           "/payment-verifications",
-          "/payment-verifications/104"
+          "/payment-verifications/RSET323",
+          "/verified-transactions"
         ]}
         initialIndex={initialIndex}
       >
@@ -179,6 +181,28 @@ storiesOf("Pages", module)
         render={props => {
           return (
             <PVerificationListPage
+              detailPageUrl={order => `/payment-verifications/${order}`}
+              {...props}
+            />
+          );
+        }}
+      />
+      <Route
+        path="/payment-verifications/:order"
+        render={props => {
+          return <PVerificationDetailPage {...props} />;
+        }}
+      />
+    </WithRouter>
+  ))
+  .add("Verified Transactions Page", () => (
+    <WithRouter initialIndex={5}>
+      <Route
+        path="/verified-transactions"
+        exact
+        render={props => {
+          return (
+            <VTransactionPage
               detailPageUrl={order => `/payment-verifications/${order}`}
               {...props}
             />

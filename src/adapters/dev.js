@@ -1,5 +1,10 @@
-import { testData, testDataTransactions, hiredData } from "./test_data";
-
+import {
+  testData,
+  testDataTransactions,
+  hiredData,
+  VerifiedTransactions
+} from "./test_data";
+import { getFragment, saveFragment } from "../localStorage";
 let token = "TESTDATATOKEN";
 function login(email, password) {
   return new Promise(resolve => resolve(token));
@@ -41,6 +46,13 @@ function getHiredTransactions(props) {
 function getTransactionDetail(props) {
   return new Promise(resolve => resolve(hiredData.find(x => x.order == props)));
 }
+function loadVerifications() {
+  return VerifiedTransactions;
+}
+
+function saveVerifications(verfications) {
+  saveFragment({ VERIFICATIONS: verifications });
+}
 export default {
   login,
   authenticate,
@@ -51,5 +63,7 @@ export default {
   deleteWithdrawal,
   makePayment,
   getHiredTransactions,
-  getTransactionDetail
+  getTransactionDetail,
+  loadVerifications,
+  saveVerifications
 };
