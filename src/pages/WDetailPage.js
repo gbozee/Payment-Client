@@ -7,11 +7,26 @@ import { Route, Switch, Redirect } from "react-router";
 import { DialogButton } from "../shared/primitives";
 
 import { ListGroup, ListItem, getDate } from "./reusables";
-const DetailItem = ({ label, children }) => {
+export const DetailItem = ({ label, children }) => {
   return (
     <Flex py={2} justifyContent="space-between">
       <Text fontSize={3}>{label}</Text>
       <Text fontSize={3}>{children}</Text>
+    </Flex>
+  );
+};
+export const DetailHeader = ({ heading, subHeading, children }) => {
+  return (
+    <Flex
+      mb={4}
+      flexDirection="column"
+      css={css`
+        align-items: center;
+      `}
+    >
+      <Heading fontSize={5}>{heading}</Heading>
+      <Text>{subHeading}</Text>
+      {children}
     </Flex>
   );
 };
@@ -212,15 +227,7 @@ export class WDetailPage extends React.Component {
     } = this.props;
     return (
       <Flex flexDirection="column">
-        <Flex
-          mb={4}
-          flexDirection="column"
-          css={css`
-            align-items: center;
-          `}
-        >
-          <Heading fontSize={5}>{data.amount}</Heading>
-          <Text>to {data.email}</Text>
+        <DetailHeader heading={data.amount} subHeading={`to ${data.email}`}>
           <DialogButton
             dialogText="Proceed with tutor payment? "
             confirmAction={this.makePayment}
@@ -229,7 +236,7 @@ export class WDetailPage extends React.Component {
             width={400}
             children="Pay tutor"
           />
-        </Flex>
+        </DetailHeader>
         <Flex mb={4} flexDirection="column">
           <ListGroup name="Details" />
           {Object.keys(data).length > 0 && (

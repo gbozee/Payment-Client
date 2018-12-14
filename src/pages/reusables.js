@@ -15,39 +15,9 @@ export const ListGroup = ({ name }) => {
     </Flex>
   );
 };
-
-export const ListItem = ({
-  to,
-  heading,
-  subHeading,
-  rightSection,
-  onClick,
-  ...rest
-}) => {
+export const AsLink = ({ to, onClick, children, ...rest }) => {
   let WLink = rest.Link || Link;
-  let child = (
-    <Flex
-      py={3}
-      px={2}
-      width={1}
-      justifyContent="space-between"
-      css={css`
-        border-bottom: 1px solid black;
-      `}
-    >
-      <Box>
-        <Text fontSize={5}>{heading}</Text>
-        <Text>{subHeading}</Text>
-      </Box>
-      <Flex
-        css={css`
-          align-self: center;
-        `}
-      >
-        {rightSection}
-      </Flex>
-    </Flex>
-  );
+
   return Boolean(to) || Boolean(onClick) ? (
     <WLink
       to={to}
@@ -61,9 +31,43 @@ export const ListItem = ({
         }
       `}
     >
-      {child}
+      {children}
     </WLink>
   ) : (
-    child
+    children
+  );
+};
+export const ListItem = ({
+  to,
+  heading,
+  subHeading,
+  rightSection,
+  onClick,
+  ...rest
+}) => {
+  return (
+    <AsLink to={to} onClick={onClick} {...rest}>
+      <Flex
+        py={3}
+        px={2}
+        width={1}
+        justifyContent="space-between"
+        css={css`
+          border-bottom: 1px solid black;
+        `}
+      >
+        <Box>
+          <Text fontSize={5}>{heading}</Text>
+          <Text>{subHeading}</Text>
+        </Box>
+        <Flex
+          css={css`
+            align-self: center;
+          `}
+        >
+          {rightSection}
+        </Flex>
+      </Flex>
+    </AsLink>
   );
 };

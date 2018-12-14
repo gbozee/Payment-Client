@@ -118,3 +118,48 @@ export function testDataTransactions() {
     }
   ];
 }
+
+export const hiredData = [
+  {
+    order: 101,
+    name: "Jamie Novak",
+    email: "jamie@example.com",
+    amount: "N20,000",
+    date: "2018-10-12 14:10:33"
+  },
+  {
+    order: 102,
+    name: "Shola James",
+    email: "shola@example.com",
+    amount: "N30,000",
+    date: "2018-9-12 14:10:33"
+  },
+  {
+    order: 103,
+    name: "Tope Oluwa",
+    email: "tope@example.com",
+    amount: "N40,000",
+    date: "2018-10-12 14:10:33"
+  },
+  {
+    order: 104,
+    name: "Kenny Kalak",
+    email: "kenny@example.com",
+    amount: "N20,500",
+    date: "2018-9-12 14:10:33"
+  },
+  {
+    order: 105,
+    name: "Biola Ojodu",
+    email: "biola@example.com",
+    amount: "N50,000",
+    date: "2018-7-12 14:10:33"
+  },
+  {
+    order: 106,
+    name: "Godwin Alogi",
+    email: "godwin@example.com",
+    amount: "N22,000",
+    date: "2018-10-12 14:10:33"
+  }
+];

@@ -1,4 +1,4 @@
-import { testData, testDataTransactions } from "./test_data";
+import { testData, testDataTransactions, hiredData } from "./test_data";
 
 let token = "TESTDATATOKEN";
 function login(email, password) {
@@ -35,6 +35,12 @@ function getBookingTransaction(transactionOrder) {
 function makePayment(order) {
   return new Promise(resolve => resolve({}));
 }
+function getHiredTransactions(props) {
+  return new Promise(resolve => resolve(hiredData));
+}
+function getTransactionDetail(props) {
+  return new Promise(resolve => resolve(hiredData.find(x => x.order == props)));
+}
 export default {
   login,
   authenticate,
@@ -43,5 +49,7 @@ export default {
   getBookingTransaction,
   deleteTransaction,
   deleteWithdrawal,
-  makePayment
+  makePayment,
+  getHiredTransactions,
+  getTransactionDetail
 };

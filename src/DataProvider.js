@@ -2,43 +2,9 @@ import React from "react";
 import { Route, Redirect } from "react-router";
 import { HomePageSpinner } from "./shared/primitives/Spinner";
 import { loadState, saveState } from "./localStorage";
-export const DataContext = React.createContext({
-  state: {},
-  dispatch: () => {},
-  actions: {}
-});
-
-export class ProtectedRoute extends React.Component {
-  static contextType = DataContext;
-  state = {
-    authenticated: null
-  };
-  componentDidMount() {
-    this.isAuthenticated();
-  }
-  isAuthenticated() {
-    let { dispatch, actions } = this.context;
-    let exists = dispatch({ type: actions.TOKEN_EXIST });
-    this.setState({ authenticated: exists });
-    return dispatch({ type: actions.AUTHENTICATE })
-      .then(data => {
-        this.setState({ authenticated: data });
-      })
-      .catch(error => {
-        this.setState({ autthenticated: false });
-      });
-  }
-  render() {
-    let { authenticated } = this.state;
-    if (authenticated === null) {
-      return <HomePageSpinner />;
-    }
-    if (authenticated === false) {
-      return <Redirect to="/login" />;
-    }
-    return <Route {...this.props} />;
-  }
-}
+import { DataContext } from "./shared/ProtectedRoute";
+export { DataContext };
+export { ProtectedRoute } from "./shared/ProtectedRoute";
 
 const actions = {
   GET_WITHDRAWALS: "GET_WITHDRAWALS",
@@ -49,7 +15,9 @@ const actions = {
   GET_WITHDRAWAL_TRANSACTIONS: "GET_WITHDRAWAL_TRANSACTIONS",
   AUTHENTICATE: "AUTHENTICATE",
   TOKEN_EXIST: "TOKEN_EXIST",
-  LOGIN_USER: "LOGIN_USER"
+  LOGIN_USER: "LOGIN_USER",
+  GET_HIRED_TRANSACTIONS: "GET_HIRED_TRANSACTIONS",
+  TRANSACTION_DETAIL: "TRANSACTION_DETAIL"
 };
 export class DataProvider extends React.Component {
   dispatch = action => {
@@ -63,7 +31,9 @@ export class DataProvider extends React.Component {
       [actions.GET_WITHDRAWAL_TRANSACTIONS]: this.getWithdrawalTransactions,
       [actions.TOKEN_EXIST]: this.tokenExist,
       [actions.AUTHENTICATE]: this.authenticateUser,
-      [actions.LOGIN_USER]: this.loginUser
+      [actions.LOGIN_USER]: this.loginUser,
+      [actions.GET_HIRED_TRANSACTIONS]: this.fetchHiredTransactions,
+      [actions.TRANSACTION_DETAIL]: this.getTransactionDetail
     };
     if (this.props.test) {
       console.log(action);
@@ -74,7 +44,8 @@ export class DataProvider extends React.Component {
     context: {
       state: {
         auth: false,
-        withdrawals: []
+        withdrawals: [],
+        hired_transactions: []
       },
       dispatch: this.dispatch,
       actions
@@ -163,6 +134,22 @@ export class DataProvider extends React.Component {
   };
   getWithdrawalTransactions = withdrawal_order => {
     return this.getAdapter().getTransactions(withdrawal_order);
+  };
+  fetchHiredTransactions = props => {
+    return this.getAdapter()
+      .getHiredTransactions(props)
+      .then(data => {
+        this.updateState({ hired_transactions: data });
+        return data;
+      });
+  };
+  getTransactionDetail = order => {
+    let { hired_transactions } = this.state.context.state;
+    let record = hired_transactions.find(x => x.order == order);
+    if (Boolean(record)) {
+      return new Promise(resolve => resolve(record));
+    }
+    return this.getAdapter().getTransactionDetail(order);
   };
   deleteTransaction = order => {
     return this.getAdapter().deleteTransaction(order);

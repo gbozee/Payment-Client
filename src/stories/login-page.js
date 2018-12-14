@@ -7,6 +7,8 @@ import { linkTo } from "@storybook/addon-links";
 import { Button, Welcome } from "@storybook/react/demo";
 import LoginPage from "../shared/LoginPage";
 import WListPage, { ListItem, ListGroup } from "../pages/WListPage";
+import PVerificationListPage from "../pages/PVerificationListPage";
+import PVerificationDetailPage from "../pages/PVerificationDetailPage";
 import WDetailPage from "../pages/WDetailPage";
 import DataProvider, { ProtectedRoute, DataContext } from "../DataProvider";
 import { MemoryRouter as Router, Route, Switch } from "react-router";
@@ -42,7 +44,9 @@ const WithRouter = ({ children, initialIndex = 0, test = true }) => {
         initialEntries={[
           "/withdrawals",
           "/withdrawals/1004/transactions",
-          "/withdrawals/1004/transactions/AA102"
+          "/withdrawals/1004/transactions/AA102",
+          "/payment-verifications",
+          "/payment-verifications/104"
         ]}
         initialIndex={initialIndex}
       >
@@ -142,6 +146,50 @@ storiesOf("Pages", module)
             {...props}
           />
         )}
+      />
+    </WithRouter>
+  ))
+  .add("Payment Verification List Page", () => (
+    <WithRouter initialIndex={3}>
+      <Route
+        path="/payment-verifications"
+        exact
+        render={props => {
+          return (
+            <PVerificationListPage
+              detailPageUrl={order => `/payment-verifications/${order}`}
+              {...props}
+            />
+          );
+        }}
+      />
+      <Route
+        path="/payment-verifications/:order"
+        render={props => {
+          return <PVerificationDetailPage {...props} />;
+        }}
+      />
+    </WithRouter>
+  ))
+  .add("Payment Verification Detail Page", () => (
+    <WithRouter initialIndex={4}>
+      <Route
+        path="/payment-verifications"
+        exact
+        render={props => {
+          return (
+            <PVerificationListPage
+              detailPageUrl={order => `/payment-verifications/${order}`}
+              {...props}
+            />
+          );
+        }}
+      />
+      <Route
+        path="/payment-verifications/:order"
+        render={props => {
+          return <PVerificationDetailPage {...props} />;
+        }}
       />
     </WithRouter>
   ));

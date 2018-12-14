@@ -4,7 +4,14 @@ import { Box, Flex, Card, Text } from "@rebass/emotion";
 import { Button } from "./primitives";
 import React from "react";
 
-const Input = ({ label, type = "text", value, onChange, isValid }) => {
+export const Input = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  isValid,
+  ...rest
+}) => {
   return (
     <Flex
       flexDirection="column"
@@ -24,7 +31,7 @@ const Input = ({ label, type = "text", value, onChange, isValid }) => {
       `}
     >
       <label htmlFor>{label}</label>
-      <input {...{ type, value, onChange }} />
+      <input {...{ type, value, onChange, ...rest }} />
     </Flex>
   );
 };
