@@ -6,15 +6,8 @@ import { DataContext } from "../DataProvider";
 import { Route, Switch, Redirect } from "react-router";
 import { DialogButton } from "../shared/primitives";
 
-import { ListGroup, ListItem, getDate } from "./reusables";
-export const DetailItem = ({ label, children }) => {
-  return (
-    <Flex py={2} justifyContent="space-between">
-      <Text fontSize={3}>{label}</Text>
-      <Text fontSize={3}>{children}</Text>
-    </Flex>
-  );
-};
+import { ListGroup, ListItem, getDate, DetailItem } from "./reusables";
+
 export const DetailHeader = ({ heading, subHeading, children }) => {
   return (
     <Flex
