@@ -1,16 +1,12 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import { Box, Flex, Button, Text } from "@rebass/emotion";
+import {  Flex, Button, Text } from "@rebass/emotion";
 import React from "react";
-import format from "date-fns/format";
-import { DataContext } from "../DataProvider";
+import { DataContext } from "tuteria-shared/lib/shared/DataContext";
 import { Link } from "react-router-dom";
-import { ListGroup, ListItem, getDate } from "./reusables";
+import { ListGroup, ListItem, getDate, getTime } from "./reusables";
 export { ListGroup, ListItem };
-function getTime(date) {
-  let dd = new Date(date);
-  return format(dd, "h:mm a");
-}
+
 export class WListPage extends React.Component {
   static contextType = DataContext;
   state = {
