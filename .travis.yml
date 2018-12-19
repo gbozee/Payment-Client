@@ -9,6 +9,7 @@ script:
   - npm install -g now
   - yarn copy_now
 
+  
 deploy:
   provider: script
   script: now --no-clipboard --token=$NOW_TOKEN --build-env REACT_APP_FIREBASE_API_KEY=$FIREBASE_API_KEY  --build-env REACT_APP_FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID && now alias
