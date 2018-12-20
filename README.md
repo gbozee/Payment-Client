@@ -2,6 +2,10 @@
 
 This is a work in progress PWA application for processing withdrawal payment on the Tuteria platform. 
 
+A live version of this app is hosted at [https://withdrawal-apps.now.sh](https://withdrawal-apps.now.sh) 
+
+The credentials are `username: james@example.com` and `password:password101`
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
