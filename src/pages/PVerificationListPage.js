@@ -3,7 +3,7 @@ import { css, jsx } from "@emotion/core";
 import { Box, Flex, Text } from "@rebass/emotion";
 import React from "react";
 import { AsLink } from "./reusables";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
 import { DateFilter } from "tuteria-shared/lib/shared/DateFilter";
 import { SpinnerContainer } from "tuteria-shared/lib/shared/primitives/Spinner";

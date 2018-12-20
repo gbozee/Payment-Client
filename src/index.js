@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { css, jsx } from "@emotion/core";
 import { Flex } from "@rebass/emotion";
-import { Route, Redirect, Link } from "react-router-dom";
+import {Redirect, Link } from 'react-router-dom'
 import ProtectedRoute from "tuteria-shared/lib/shared/ProtectedRoute";
 import { devAdapter } from "./adapters";
 import WithRouter from "tuteria-shared/lib/shared/PageSetup";
@@ -17,7 +17,6 @@ const WListPage = React.lazy(() => import("./pages/WListPage"));
 const PVerificationDetailPage = React.lazy(() =>
   import(`./pages/PVerificationDetailPage`)
 );
-const WorkingSection = React.lazy(() => import(`./pages/WorkingSection`));
 const VTransactionPage = React.lazy(() => import(`./pages/VTransactionPage`));
 const PVerificationListPage = React.lazy(() =>
   import(`./pages/PVerificationListPage`)
@@ -90,15 +89,7 @@ function App() {
         }}
       />
       <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
-      <Route
-        path="/tutor-working-section"
-        render={props => (
-          <WorkingSection
-            {...props}
-            detailPageUrl={slug => `/worked-records/${slug}?email=true`}
-          />
-        )}
-      />
+     
       <Redirect to="/withdrawals" />
     </WithRouter>
   );

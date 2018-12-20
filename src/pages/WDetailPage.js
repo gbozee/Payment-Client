@@ -3,7 +3,9 @@ import { css, jsx } from "@emotion/core";
 import { Flex, Text, Heading } from "@rebass/emotion";
 import React from "react";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
-import { Route, Switch, Redirect } from "react-router";
+import Route from "react-router/Route";
+import Switch from "react-router/Switch";
+import Redirect from "react-router/Redirect";
 import { DialogButton } from "tuteria-shared/lib/shared/primitives";
 
 import {

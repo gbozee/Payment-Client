@@ -3,7 +3,7 @@ import { css, jsx } from "@emotion/core";
 import {  Flex, Button, Text } from "@rebass/emotion";
 import React from "react";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 import { ListGroup, ListItem, getDate, getTime } from "./reusables";
 export { ListGroup, ListItem };
 

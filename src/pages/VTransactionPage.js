@@ -5,7 +5,7 @@ import React from "react";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
 import { ListGroup, ListItem } from "./reusables";
 import { DateFilter } from "tuteria-shared/lib/shared/DateFilter";
-import { Link } from "react-router-dom";
+import Link from "react-router-dom/Link";
 
 export class VTransactionPage extends React.Component {
   static contextType = DataContext;

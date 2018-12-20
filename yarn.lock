@@ -10169,9 +10169,9 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
-tuteria-shared@gbozee/Shared-Admin-Lib#v1.0.1:
-  version "1.0.1"
-  resolved "https://codeload.github.com/gbozee/Shared-Admin-Lib/tar.gz/8a2f42449f772009fab359beeaf43085dc19a7e9"
+tuteria-shared@gbozee/Shared-Admin-Lib#59e6708:
+  version "1.0.2"
+  resolved "https://codeload.github.com/gbozee/Shared-Admin-Lib/tar.gz/59e6708e8e5493d90734bedb6c31c00de46ab2c2"
   dependencies:
     "@babel/cli" "^7.2.0"
     "@babel/core" "^7.2.2"
