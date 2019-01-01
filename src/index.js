@@ -6,7 +6,7 @@ import { css, jsx } from "@emotion/core";
 import { Flex } from "@rebass/emotion";
 import {Redirect, Link } from 'react-router-dom'
 import ProtectedRoute from "tuteria-shared/lib/shared/ProtectedRoute";
-import { devAdapter } from "./adapters";
+import devAdapter from "./adapters/devProd";
 import WithRouter from "tuteria-shared/lib/shared/PageSetup";
 import appContext from "./paymentContext";
 // import appFirebase from "./adapters/backupFirebase";

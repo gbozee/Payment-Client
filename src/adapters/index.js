@@ -11,8 +11,8 @@ export function filterHelper(
   if (Boolean(searchParam)) {
     result = data.filter(
       x =>
-        x.order.toLowerCase().includes(search) ||
-        x.email.toLowerCase().includes(search)
+        x.order.toString().toLowerCase().includes(search) ||
+        (x.email && x.email.toLowerCase().includes(search))
     );
   }
   if (Boolean(dateFilter.from) && Boolean(dateFilter.to)) {

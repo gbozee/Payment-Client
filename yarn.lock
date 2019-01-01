@@ -10187,6 +10187,24 @@ tuteria-shared@gbozee/Shared-Admin-Lib#59e6708:
     react-modal "3.7.1"
     react-router-dom "4.3.1"
 
+tuteria-shared@gbozee/Shared-Admin-Lib#7cb257b:
+  version "1.0.2"
+  resolved "https://codeload.github.com/gbozee/Shared-Admin-Lib/tar.gz/7cb257b1ab15d756ae44697b557bcc0ae6a0a894"
+  dependencies:
+    "@babel/cli" "^7.2.0"
+    "@babel/core" "^7.2.2"
+    "@babel/plugin-proposal-class-properties" "^7.2.1"
+    "@babel/plugin-syntax-dynamic-import" "^7.2.0"
+    "@babel/preset-react" "^7.0.0"
+    "@emotion/core" "10.0.5"
+    "@emotion/styled" "10.0.5"
+    "@rebass/emotion" "3.0.0"
+    date-fns "1.30.1"
+    firebase "5.7.0"
+    query-string "^6.2.0"
+    react-modal "3.7.1"
+    react-router-dom "4.3.1"
+
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"

@@ -55,8 +55,8 @@ const deleteWithdrawal = (order, { state, updateState, getAdapter }) => {
       });
     });
 };
-const fetchBookingTransaction = (booking_order, { getAdapter }) => {
-  return getAdapter().getBookingTransaction(booking_order);
+const fetchBookingTransaction = ({order,kind}, { getAdapter }) => {
+  return getAdapter().getBookingTransaction({order,kind});
 };
 
 const getWithdrawalTransactions = (withdrawal_order, { getAdapter }) => {
@@ -72,8 +72,9 @@ const fetchVerifiedTransactons = (
     return new Promise(resolve => resolve(verified_transactions));
   }
   return firebaseAction("getWorkingData", [agent, {}]).then(data => {
+    let result = Boolean(data) ? data: {}
     updateState({
-      verified_transactions: data
+      verified_transactions: result
     });
     return data;
   });
@@ -118,11 +119,14 @@ const getTransactionDetail = (
   { getAdapter, state, updateState }
 ) => {
   let { hired_transactions, verified_transactions } = state.context.state;
+  if(hired_transactions.length > 0){
   let record = hired_transactions.find(
-    x => x.order.toLowerCase() === order.toLowerCase()
+    x => x.order.toString().toLowerCase() === order.toLowerCase()
   );
   if (Boolean(record)) {
     return new Promise(resolve => resolve([record, verified_transactions]));
+  }
+    
   }
   return Promise.all([
     getAdapter().getTransactionDetail(order),

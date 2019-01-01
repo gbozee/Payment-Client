@@ -1,10 +1,9 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
-import {  Flex, Button, Text } from "@rebass/emotion";
+import { Flex, Button, Text } from "@rebass/emotion";
 import React from "react";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
-import Link from "react-router-dom/Link";
-import { ListGroup, ListItem, getDate, getTime } from "./reusables";
+import { ListGroup, ListItem, getDate, getTime,SectionListPage,Link } from "./reusables";
 export { ListGroup, ListItem };
 
 export class WListPage extends React.Component {
@@ -28,7 +27,7 @@ export class WListPage extends React.Component {
         rows.push(
           <ListItem
             key={index}
-            heading={withdrawal.amount}
+            heading={`N${withdrawal.amount}`}
             subHeading={withdrawal.email}
             rightSection={getTime(withdrawal.date)}
             to={this.props.detailPageUrl(withdrawal.order)}
@@ -67,7 +66,16 @@ export class WListPage extends React.Component {
           </Button>
         </Flex>
         {this.state.data.length > 0 ? (
-          this.renderItemsInGroups()
+          <SectionListPage
+            data={this.state.data}
+            LinkComponent={Link}
+            callback={withdrawal => ({
+              heading: `N${withdrawal.amount}`,
+              subHeading: withdrawal.email,
+              rightSection: getTime(withdrawal.date),
+              to: this.props.detailPageUrl(withdrawal.order)
+            })}
+          />
         ) : (
           <Flex
             css={css`

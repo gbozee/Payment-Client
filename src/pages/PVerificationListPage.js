@@ -2,7 +2,7 @@
 import { css, jsx } from "@emotion/core";
 import { Box, Flex, Text } from "@rebass/emotion";
 import React from "react";
-import { AsLink } from "./reusables";
+import { AsLink, SectionListPage } from "./reusables";
 import Link from "react-router-dom/Link";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
 import { DateFilter } from "tuteria-shared/lib/shared/DateFilter";
@@ -98,7 +98,7 @@ export class PVerificationListPage extends React.Component {
     }
   };
   transactionVerified = order => {
-    let { verified_transactions } = this.state;
+    let { verified_transactions = {} } = this.state;
     let records = []
       .concat(...Object.values(verified_transactions))
       .map(x => x.order);
@@ -163,18 +163,19 @@ export class PVerificationListPage extends React.Component {
         </Flex>
         <SpinnerContainer condition={this.state.loading}>
           <Flex flexDirection="column">
-            {this.filteredResults().map(transaction => (
-              <PVerificationListItem
-                key={transaction.order}
-                date={transaction.date}
-                heading={transaction.name}
-                subHeading={transaction.email}
-                rightSection={`N${transaction.amount.toLocaleString()}`}
-                to={this.props.detailPageUrl(transaction.order)}
-                verified={this.transactionVerified(transaction.order)}
-                Link={Link}
-              />
-            ))}
+            <SectionListPage
+              Component={PVerificationListItem}
+              data={this.filteredResults()}
+            LinkComponent={Link}
+              callback={transaction => ({
+                // date: transaction.date,
+                heading: transaction.name,
+                subHeading: transaction.email,
+                rightSection: `N${transaction.amount.toLocaleString()}`,
+                to: this.props.detailPageUrl(transaction.order),
+                verified: this.transactionVerified(transaction.order)
+              })}
+            />
           </Flex>
         </SpinnerContainer>
       </Flex>

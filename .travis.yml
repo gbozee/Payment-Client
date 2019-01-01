@@ -7,7 +7,7 @@ cache:
   - node_modules
 
 script:
-  - REACT_APP_FIREBASE_API_KEY=$FIREBASE_API_KEY  REACT_APP_FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID yarn build
+  - REACT_APP_FIREBASE_API_KEY=$FIREBASE_API_KEY REACT_APP_ENDPOINT_URL=$ENDPOINT_URL REACT_APP_FIREBASE_PROJECT_ID=$FIREBASE_PROJECT_ID yarn build
   - npm install -g now
   - yarn copy_now
   - cd build && now --no-clipboard --token=$NOW_TOKEN  && now alias --token=$NOW_TOKEN

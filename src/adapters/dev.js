@@ -37,12 +37,12 @@ function deleteWithdrawal(order) {
 
 function getBookingTransaction(transactionOrder) {
   return new Promise(resolve =>
-    resolve({
-      amount: "N2000",
-      status: "TUTOR_HIRE",
-      date: "2018-10-10 9:20:33",
-      order: "AA101"
-    })
+    resolve([{
+          amount: "N2000",
+          status: "TUTOR_HIRE",
+          date: "2018-10-10 9:20:33",
+          order: "AA101"
+        }])
   );
 }
 

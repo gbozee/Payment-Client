@@ -58,21 +58,21 @@ class TransactionDetail extends React.Component {
           <DetailItem label="Duration">
             {getDuration(detail.booking.start_time, detail.booking.end_time)}
           </DetailItem>
-          <DetailItem label="Made Payment">{detail.made_payment}</DetailItem>
+          <DetailItem label="Made Payment">{detail.booking.made_payment? "True":"False"}</DetailItem>
           <DetailItem label="Booking Status">
             {detail.booking.status}
           </DetailItem>
         </Flex>
         <Flex mb={4} flexDirection="column">
           <ListGroup name="Booking Transaction" />
-          {booking_transaction &&
-            Object.keys(booking_transaction).length > 0 && (
+          {Array.isArray(booking_transaction) && booking_transaction.map(x=>(
               <ListItem
-                heading={booking_transaction.amount}
-                subHeading={booking_transaction.status}
-                rightSection={getDate(booking_transaction.date)}
+                key={x.order}
+                heading={x.amount}
+                subHeading={x.status}
+                rightSection={getDate(x.date)}
               />
-            )}
+            ))}
         </Flex>
       </Flex>
     );
@@ -97,7 +97,7 @@ class TransactionList extends React.Component {
             <ListItem
               key={transaction.order}
               onClick={() => {
-                this.toDetailPage(transaction.order, transaction.status);
+                this.toDetailPage(transaction.order, transaction.status,"TUTOR EARNING");
               }}
               heading={transaction.amount}
               subHeading={transaction.status}
@@ -181,12 +181,12 @@ export class WDetailPage extends React.Component {
         this.setState({ loading: false });
       });
   };
-  getBookingTransaction = booking_order => {
+  getBookingTransaction = (booking_order, kind="booking") => {
     let { dispatch, actions } = this.context;
     this.setState({ booking_transaction: {} });
     dispatch({
       type: actions.GET_BOOKING_TRANSACTION,
-      value: booking_order
+      value: {order:booking_order,kind}
     })
       .then(data => {
         this.setState({ booking_transaction: data });
@@ -194,12 +194,12 @@ export class WDetailPage extends React.Component {
       .catch(error => {});
   };
   getTransactionDetail = transaction_id => {
-    return this.state.transactions.find(x => x.order === transaction_id);
+    return this.state.transactions.find(x => x.order === parseInt(transaction_id));
   };
   goToTransactionDetail = (withdrawal_id, transaction_id) => {
     let { history } = this.props;
-    let record = this.getTransactionDetail(transaction_id);
-    this.getBookingTransaction(record.booking.order);
+    // let record = this.getTransactionDetail(transaction_id);
+    // this.getBookingTransaction(record.booking.order);
     history.push(
       `/withdrawals/${withdrawal_id}/transactions/${transaction_id}`
     );
@@ -265,7 +265,8 @@ export class WDetailPage extends React.Component {
                       deleteTransaction={this.deleteTransaction}
                       getBookingTransaction={() =>
                         this.getBookingTransaction(
-                          props.match.params.transaction_id
+                          detail.booking.order
+                          // props.match.params.transaction_id, "transaction"
                         )
                       }
                       loading={this.state.loading}

@@ -1,15 +1,15 @@
 /** @jsx jsx */
 import { css, jsx } from "@emotion/core";
 import { Flex, Text, Heading } from "@rebass/emotion";
-
+import {ListItem,ListGroup,getDate} from 'tuteria-shared/lib/shared/reusables'
+import Link from "react-router-dom/Link";
 export {
-  getDate,
-  ListGroup,
   AsLink,
-  ListItem,
   DetailItem,
-  getTime
+  getTime,
+  SectionListPage
 } from "tuteria-shared/lib/shared/reusables";
+export {ListItem,ListGroup,getDate,Link}
 
 export const DetailHeader = ({ heading, subHeading, children }) => {
   return (
@@ -26,3 +26,5 @@ export const DetailHeader = ({ heading, subHeading, children }) => {
     </Flex>
   );
 };
+
+
