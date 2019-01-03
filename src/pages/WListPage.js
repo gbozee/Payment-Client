@@ -71,7 +71,9 @@ export class WListPage extends React.Component {
           width={1}
           justifyContent="space-between"
         >
-          <Heading>Total Amount - N{this.getTotalAmount()}</Heading>
+          {Boolean(this.getTotalAmount()) && (
+            <Heading>Total Amount - N{this.getTotalAmount()}</Heading>
+          )}
           <Button
             css={css`
               :active {

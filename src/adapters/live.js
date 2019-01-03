@@ -4,35 +4,54 @@ let baseUrl = process.env.REACT_APP_ENDPOINT_URL;
 const config = {
   headers: { 'Content-Type': 'application/json' },
 };
-let fields = `user {
-        email
-        first_name
-        last_name
-        primary_phone_no{
-          number
-        }
-        wallet{
-          amount_available
-        }
-      }
-      amount
-      order
-      created
-      payout {
-        account_id
-        account_name
-        bank
-      }`;
+let fields = `
+  user {
+    email
+    first_name
+    last_name
+    primary_phone_no{
+      number
+    }
+    wallet{
+      amount_available
+    }
+  }
+  amount
+  order
+  created
+  payout {
+    account_id
+    account_name
+    bank
+  }
+`;
+let bookingFields = `
+  order
+  status_display
+  first_session
+  last_session
+  made_payment
+  user{
+    email
+    first_name
+    last_name
+  }
+  ts{
+    tutor{
+      email
+    }
+  }
+`
 let transactionFields = `
-pk
-          status
-          created
-          modified
-          amount
-          transaction_type
-          credit
-          amount_paid
-          total
+    pk
+    status
+    created
+    modified
+    amount
+    transaction_type
+    credit
+    amount_paid
+    total
 `;
 
 const queries = {
@@ -82,19 +101,7 @@ const queries = {
             modified
             amount
             booking{
-              order
-              status_display
-              first_session
-              last_session
-              made_payment
-              user{
-                email
-              }
-              ts{
-                tutor{
-                  email
-                }
-              }
+              ${bookingFields}
             }
             transaction_type
             credit
@@ -114,11 +121,7 @@ const queries = {
           total
           pk
           booking{
-            user{
-              first_name
-              last_name
-              email
-            }
+            ${bookingFields}
             transactions{
               ${transactionFields}
             }
@@ -276,6 +279,15 @@ function getTransactionDetail(props) {
       amount: transaction.total,
       date: transaction.created,
       modified: transaction.modified,
+      booking: transaction.booking && {
+        client_email: transaction.booking.user.email,
+        tutor_email: transaction.booking.ts.tutor.email,
+        start_time: transaction.booking.first_session,
+        end_time: transaction.booking.last_session,
+        made_payment: transaction.booking.made_payment,
+        status: transaction.booking.status_display
+
+      },
       transactions: transaction.booking.transactions.map(transaction => ({
         ...transaction,
         date: transaction.created,

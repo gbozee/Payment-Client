@@ -8,7 +8,7 @@ import { DetailHeader, DetailItem, ListGroup } from './reusables';
 import Modal from 'tuteria-shared/lib/shared/primitives/Modal';
 import { Input } from 'tuteria-shared/lib/shared/LoginPage';
 import { getDate } from 'tuteria-shared/lib/shared/reusables';
-import { TransactionList } from './WDetailPage';
+import { getDuration } from './WDetailPage';
 
 export const Select = ({ options, label, value, onChange }) => {
   return (
@@ -59,7 +59,6 @@ export class PVerificationDetailPage extends React.Component {
       type: actions.TRANSACTION_DETAIL,
       value: order,
     }).then(data => {
-      console.log(data);
       this.setState({
         data: data[0],
         verified_transactions: data[1],
@@ -104,6 +103,7 @@ export class PVerificationDetailPage extends React.Component {
   };
   render() {
     let { data, payment_detail, showModal } = this.state;
+    console.log(data)
     return Object.keys(data).length > 0 ? (
       <Flex flexDirection="column">
         <Modal
@@ -194,12 +194,17 @@ export class PVerificationDetailPage extends React.Component {
             </>
           )}
         </Flex>
-        <Flex flexDirection="column">
-          <TransactionList
-            transactions={this.state.verified_transactions || data.transactions}
-            goToTransactionDetail={this.goToTransactionDetail}
-            {...this.props}
-          />
+        <Flex mb={4} flexDirection="column">
+          <ListGroup name="Transaction Details" />
+          <DetailItem label="Client Email">{data.booking.client_email}</DetailItem>
+          <DetailItem label="Tutor email">{data.booking.tutor_email}</DetailItem>
+          <DetailItem label="Duration">
+            {getDuration(data.booking.start_time, data.booking.end_time)}
+          </DetailItem>
+          <DetailItem label="Made Payment">{data.booking.made_payment? "True":"False"}</DetailItem>
+          <DetailItem label="Booking Status">
+            {data.booking.status}
+          </DetailItem>
         </Flex>
       </Flex>
     ) : null;

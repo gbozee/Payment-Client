@@ -16,7 +16,7 @@ import {
   DetailHeader
 } from "./reusables";
 
-function getDuration(start, end) {
+export function getDuration(start, end) {
   return `${getDate(start, true)} - ${getDate(end, true)}`;
 }
 class TransactionDetail extends React.Component {
