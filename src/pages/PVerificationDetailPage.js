@@ -196,7 +196,7 @@ export class PVerificationDetailPage extends React.Component {
         </Flex>
         <Flex flexDirection="column">
           <TransactionList
-            transactions={data.transactions}
+            transactions={this.state.verified_transactions || data.transactions}
             goToTransactionDetail={this.goToTransactionDetail}
             {...this.props}
           />
