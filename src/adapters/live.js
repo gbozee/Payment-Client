@@ -1,6 +1,9 @@
-import axios from "axios";
+import axios from 'axios';
 
 let baseUrl = process.env.REACT_APP_ENDPOINT_URL;
+const config = {
+  headers: { 'Content-Type': 'application/json' },
+};
 let fields = `user {
         email
         first_name
@@ -31,6 +34,46 @@ pk
           amount_paid
           total
 `;
+
+const queries = {
+  hired_transactions_query: `
+    query hiredTransactionsQuery($status: String!, $_from: String!, $to: String!) {
+      accountant_endpoint {
+        all_transactions(status: $status, _from: $_from, to: $to) {
+          pk
+          status
+          booking{
+            user{
+              first_name
+              last_name
+              email
+            }
+          
+          }
+          created
+          modified
+          amount
+          transaction_type
+          credit
+          amount_paid
+          total
+        }
+      }
+    }
+  `,
+};
+
+const makeApiCall = (query, variables) => {
+  return axios.post(
+    baseUrl,
+    {
+      query,
+      variables,
+    },
+    config
+  );
+};
+
 const hired_transactions_query = ({ from, to }) => {
   let date = { from, to };
   if (!Boolean(from) || !Boolean(to)) {
@@ -71,7 +114,7 @@ accountant_endpoint{
 }}
   `;
 };
-const query = (kind = "list", param) => {
+const query = (kind = 'list', param) => {
   let options = {
     list: () => `all_withdrawals{${fields}}`,
     detail: order => `withdrawal_detail(order:${JSON.stringify(order)}){
@@ -126,7 +169,7 @@ const query = (kind = "list", param) => {
       order
     )}){
            ${transactionFields}
-    }`
+    }`,
   };
   return `
     {
@@ -145,7 +188,7 @@ function responseCallback(key) {
 function getAllWithdrawals() {
   return axios
     .post(baseUrl, { query: query() })
-    .then(responseCallback("all_withdrawals"))
+    .then(responseCallback('all_withdrawals'))
     .then(withdrawals => {
       return withdrawals.map(withdrawal => ({
         ...withdrawal,
@@ -157,15 +200,15 @@ function getAllWithdrawals() {
         wallet_amount: withdrawal.user.wallet.amount_available,
         phone_no:
           withdrawal.user.primary_phone_no &&
-          withdrawal.user.primary_phone_no.number
+          withdrawal.user.primary_phone_no.number,
       }));
     });
 }
 
 function getTransactions(withrawalOrder) {
   return axios
-    .post(baseUrl, { query: query("detail", withrawalOrder) })
-    .then(responseCallback("withdrawal_detail"))
+    .post(baseUrl, { query: query('detail', withrawalOrder) })
+    .then(responseCallback('withdrawal_detail'))
     .then(withdrawal =>
       withdrawal.transactions.map(transaction => ({
         amount: `N${transaction.total}`,
@@ -179,8 +222,8 @@ function getTransactions(withrawalOrder) {
           status: transaction.booking.status_display,
           start_time: transaction.booking.first_session,
           end_time: transaction.booking.last_session,
-          made_payment: transaction.booking.made_payment
-        }
+          made_payment: transaction.booking.made_payment,
+        },
       }))
     );
 }
@@ -195,9 +238,9 @@ function deleteWithdrawal(order) {
 function getBookingTransaction({ order, kind }) {
   console.log({ kind });
   let q =
-    kind === "transaction" ? "transaction_detail" : "booking_transactions";
+    kind === 'transaction' ? 'transaction_detail' : 'booking_transactions';
   let transform = data =>
-    kind === "transaction" ? data.booking.transactions : data;
+    kind === 'transaction' ? data.booking.transactions : data;
   return axios
     .post(baseUrl, { query: query(q, order) })
     .then(responseCallback(q))
@@ -206,7 +249,7 @@ function getBookingTransaction({ order, kind }) {
         amount: transactionDetail.total,
         status: transactionDetail.status,
         date: transactionDetail.created,
-        order: transactionDetail.pk
+        order: transactionDetail.pk,
       }));
     });
 }
@@ -217,9 +260,21 @@ function makePayment(order) {
 
 function getHiredTransactions(props, filterFunc) {
   //props could be dateFilter, searchParam
-  return axios
-    .post(baseUrl, { query: hired_transactions_query(props.dateFilter || {}) })
-    .then(responseCallback("all_transactions"))
+  const { from, to } = props.dateFilter;
+  let date = { from, to };
+  if (!Boolean(from) || !Boolean(to)) {
+    let today = new Date();
+    let year = today.getFullYear();
+    let month = today.getMonth() + 1;
+    if (today.getMonth() === 0) {
+      year -= 1;
+      month = 12;
+    }
+    date.to = `${today.getFullYear()}-${today.getMonth() + 1}-${30}`;
+    date.from = `${year}-${month}-${1}`;
+  }
+  makeApiCall(queries['hired_transactions_query'], {status: "TUTOR_HIRE", ...date})
+    .then(responseCallback('all_transactions'))
     .then(transactions =>
       transactions.map(transaction => {
         return {
@@ -232,16 +287,35 @@ function getHiredTransactions(props, filterFunc) {
           email: transaction.booking && transaction.booking.user.email,
           amount: transaction.total,
           date: transaction.created,
-          modified: transaction.modified
+          modified: transaction.modified,
         };
       })
     );
+  // return axios
+  //   .post(baseUrl, { query: hired_transactions_query(props.dateFilter || {}) })
+  //   .then(responseCallback("all_transactions"))
+  //   .then(transactions =>
+  //     transactions.map(transaction => {
+  //       return {
+  //         order: transaction.pk,
+  //         name:
+  //           transaction.booking &&
+  //           `${transaction.booking.user.first_name} ${
+  //             transaction.booking.user.last_name
+  //           }`,
+  //         email: transaction.booking && transaction.booking.user.email,
+  //         amount: transaction.total,
+  //         date: transaction.created,
+  //         modified: transaction.modified
+  //       };
+  //     })
+  //   );
 }
 
 function getTransactionDetail(props) {
   return axios
-    .post(baseUrl, {query:query("transaction_detail", props)})
-    .then(responseCallback("transaction_detail"))
+    .post(baseUrl, { query: query('transaction_detail', props) })
+    .then(responseCallback('transaction_detail'))
     .then(transaction => ({
       order: transaction.pk,
       name:
@@ -252,7 +326,7 @@ function getTransactionDetail(props) {
       email: transaction.booking && transaction.booking.user.email,
       amount: transaction.total,
       date: transaction.created,
-      modified: transaction.modified
+      modified: transaction.modified,
     }));
   // return new Promise(resolve =>
   // resolve(hiredData.find(x => x.order.toLowerCase() === props.toLowerCase()))
@@ -265,7 +339,6 @@ function saveVerifications(verifications) {
   // });
 }
 
-
 export default {
   //payment data
   getAllWithdrawals,
@@ -276,5 +349,5 @@ export default {
   makePayment,
   getHiredTransactions,
   getTransactionDetail,
-  saveVerifications
+  saveVerifications,
 };
