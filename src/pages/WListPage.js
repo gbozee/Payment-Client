@@ -1,15 +1,22 @@
 /** @jsx jsx */
-import { css, jsx } from "@emotion/core";
-import { Flex, Button, Text } from "@rebass/emotion";
-import React from "react";
-import { DataContext } from "tuteria-shared/lib/shared/DataContext";
-import { ListGroup, ListItem, getDate, getTime,SectionListPage,Link } from "./reusables";
+import { css, jsx } from '@emotion/core';
+import { Flex, Button, Text, Heading } from '@rebass/emotion';
+import React from 'react';
+import { DataContext } from 'tuteria-shared/lib/shared/DataContext';
+import {
+  ListGroup,
+  ListItem,
+  getDate,
+  getTime,
+  SectionListPage,
+  Link,
+} from './reusables';
 export { ListGroup, ListItem };
 
 export class WListPage extends React.Component {
   static contextType = DataContext;
   state = {
-    data: []
+    data: [],
   };
   componentDidMount() {
     this.fetchList();
@@ -47,10 +54,24 @@ export class WListPage extends React.Component {
   refreshList = () => {
     this.fetchList(true);
   };
+  getTotalAmount = () => {
+    const { data } = this.state;
+    if (data.length > 0) {
+      return data.reduce((acc, item) => acc + item.amount, 0);
+    }
+    return 0;
+  };
   render() {
     return (
       <Flex flexDirection="column">
-        <Flex flexDirection="row-reverse" pr={2} pb={3} width={1}>
+        <Flex
+          flexDirection="row"
+          pr={2}
+          pb={3}
+          width={1}
+          justifyContent="space-between"
+        >
+          <Heading>Total Amount - N{this.getTotalAmount()}</Heading>
           <Button
             css={css`
               :active {
@@ -73,7 +94,7 @@ export class WListPage extends React.Component {
               heading: `N${withdrawal.amount}`,
               subHeading: withdrawal.email,
               rightSection: getTime(withdrawal.date),
-              to: this.props.detailPageUrl(withdrawal.order)
+              to: this.props.detailPageUrl(withdrawal.order),
             })}
           />
         ) : (

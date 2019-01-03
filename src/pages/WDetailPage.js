@@ -78,7 +78,7 @@ class TransactionDetail extends React.Component {
     );
   }
 }
-class TransactionList extends React.Component {
+export class TransactionList extends React.Component {
   toDetailPage = (order, status, condition = "EARNING") => {
     let {
       match: { params }

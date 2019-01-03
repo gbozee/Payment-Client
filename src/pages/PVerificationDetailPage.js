@@ -1,13 +1,14 @@
 /** @jsx jsx */
-import { jsx, css } from "@emotion/core";
-import { Flex } from "@rebass/emotion";
-import React from "react";
-import { DataContext } from "tuteria-shared/lib/shared/DataContext";
-import { Button } from "tuteria-shared/lib/shared/primitives";
-import { DetailHeader, DetailItem, ListGroup } from "./reusables";
-import Modal from "tuteria-shared/lib/shared/primitives/Modal";
-import { Input } from "tuteria-shared/lib/shared/LoginPage";
-import { getDate } from "tuteria-shared/lib/shared/reusables";
+import { jsx, css } from '@emotion/core';
+import { Flex } from '@rebass/emotion';
+import React from 'react';
+import { DataContext } from 'tuteria-shared/lib/shared/DataContext';
+import { Button } from 'tuteria-shared/lib/shared/primitives';
+import { DetailHeader, DetailItem, ListGroup } from './reusables';
+import Modal from 'tuteria-shared/lib/shared/primitives/Modal';
+import { Input } from 'tuteria-shared/lib/shared/LoginPage';
+import { getDate } from 'tuteria-shared/lib/shared/reusables';
+import { TransactionList } from './WDetailPage';
 
 export const Select = ({ options, label, value, onChange }) => {
   return (
@@ -46,7 +47,7 @@ export class PVerificationDetailPage extends React.Component {
     data: {},
     payment_detail: {},
     showModal: false,
-    verified_transactions: []
+    verified_transactions: [],
   };
   static contextType = DataContext;
 
@@ -56,16 +57,17 @@ export class PVerificationDetailPage extends React.Component {
     let order = match.params.order;
     dispatch({
       type: actions.TRANSACTION_DETAIL,
-      value: order
+      value: order,
     }).then(data => {
+      console.log(data);
       this.setState({
         data: data[0],
         verified_transactions: data[1],
-        payment_detail: this.getPaymentMethod(order, data[1])
+        payment_detail: this.getPaymentMethod(order, data[1]),
       });
     });
   }
-  getPaymentMethod = (order, verified_transactions) => {
+  getPaymentMethod = (order, verified_transactions = {}) => {
     let records = [].concat(...Object.values(verified_transactions));
     return records.find(x => x.order === order) || {};
   };
@@ -74,8 +76,8 @@ export class PVerificationDetailPage extends React.Component {
       this.setState({
         payment_detail: {
           ...this.state.payment_detail,
-          [field]: e.target.value
-        }
+          [field]: e.target.value,
+        },
       });
     };
   };
@@ -85,11 +87,20 @@ export class PVerificationDetailPage extends React.Component {
 
     return dispatch({
       type: actions.UPDATE_VERIFICATION,
-      value: payment_detail
+      value: payment_detail,
     }).then(() => {
       this.setState({ showModal: false });
       this.props.history.goBack();
     });
+  };
+
+  goToTransactionDetail = (withdrawal_id, transaction_id) => {
+    let { history } = this.props;
+    // let record = this.getTransactionDetail(transaction_id);
+    // this.getBookingTransaction(record.booking.order);
+    history.push(
+      `/withdrawals/${withdrawal_id}/transactions/${transaction_id}`
+    );
   };
   render() {
     let { data, payment_detail, showModal } = this.state;
@@ -98,7 +109,7 @@ export class PVerificationDetailPage extends React.Component {
         <Modal
           action={() => {
             let result = window.confirm(
-              "Are you sure you want to approve this payment"
+              'Are you sure you want to approve this payment'
             );
             if (result) {
               this.setState(
@@ -108,13 +119,13 @@ export class PVerificationDetailPage extends React.Component {
                       ? {
                           amount: data.amount,
                           order: data.order,
-                          ...payment_detail
+                          ...payment_detail,
                         }
                       : {
-                          method: "",
+                          method: '',
                           amount: data.amount,
-                          order: data.order
-                        }
+                          order: data.order,
+                        },
                 },
                 () => {
                   if (this.state.payment_detail.method) {
@@ -131,7 +142,7 @@ export class PVerificationDetailPage extends React.Component {
               payment_detail: this.getPaymentMethod(
                 data.order,
                 this.state.verified_transactions
-              )
+              ),
             });
           }}
           showModal={showModal}
@@ -144,19 +155,19 @@ export class PVerificationDetailPage extends React.Component {
               label="Payment Method"
               value={payment_detail.method}
               options={[
-                { label: "Select Payment Method", value: "" },
-                { label: "Paystack", value: "Paystack" },
-                { label: "UBA Bank", value: "UBA Bank" },
-                { label: "GT Bank", value: "GT Bank" },
-                { label: "Zenith Bank", value: "Zenith Bank" }
+                { label: 'Select Payment Method', value: '' },
+                { label: 'Paystack', value: 'Paystack' },
+                { label: 'UBA Bank', value: 'UBA Bank' },
+                { label: 'GT Bank', value: 'GT Bank' },
+                { label: 'Zenith Bank', value: 'Zenith Bank' },
               ]}
-              onChange={this.updatePaymentDetail("method")}
+              onChange={this.updatePaymentDetail('method')}
             />
             <Input
               type="number"
               label="Amount Paid"
               value={parseFloat(payment_detail.amount || data.amount)}
-              onChange={this.updatePaymentDetail("amount")}
+              onChange={this.updatePaymentDetail('amount')}
             />
           </Flex>
         </Modal>
@@ -165,7 +176,7 @@ export class PVerificationDetailPage extends React.Component {
           subHeading={`from ${data.name}`}
         >
           <Button onClick={() => this.setState({ showModal: true })}>
-            {payment_detail.method ? "Update Payment" : "Confirm Payment"}
+            {payment_detail.method ? 'Update Payment' : 'Confirm Payment'}
           </Button>
         </DetailHeader>
         <Flex mb={4} flexDirection="column">
@@ -182,6 +193,13 @@ export class PVerificationDetailPage extends React.Component {
               <DetailItem label="Amount">{payment_detail.amount}</DetailItem>
             </>
           )}
+        </Flex>
+        <Flex flexDirection="column">
+          <TransactionList
+            transactions={data.transactions}
+            goToTransactionDetail={this.goToTransactionDetail}
+            {...this.props}
+          />
         </Flex>
       </Flex>
     ) : null;

@@ -61,6 +61,81 @@ const queries = {
       }
     }
   `,
+  all_withdrawals: `
+    query {
+      accountant_endpoint {
+        all_withdrawals{${fields}}
+      }
+    }
+  `,
+  withdrawal_detail: `
+    query withdrawal_detail($order: String!) {
+      accountant_endpoint {
+        withdrawal_detail(order: $order) {
+          user{
+            email
+          }
+          transactions{
+            pk
+            status
+            created
+            modified
+            amount
+            booking{
+              order
+              status_display
+              first_session
+              last_session
+              made_payment
+              user{
+                email
+              }
+              ts{
+                tutor{
+                  email
+                }
+              }
+            }
+            transaction_type
+            credit
+            amount_paid
+            total
+          }
+        }
+      }
+    }
+  `,
+  transaction_detail: `
+    query transaction_detail($order: String!) {
+      accountant_endpoint {
+        transaction_detail(order: $order) {
+          created
+          modified
+          total
+          pk
+          booking{
+            user{
+              first_name
+              last_name
+              email
+            }
+            transactions{
+              ${transactionFields}
+            }
+          }
+        }
+      }
+    }
+  `,
+  booking_transactions: `
+    query booking_transactions($order: String!) {
+      accountant_endpoint {
+        booking_transactions(order: $order) {
+          ${transactionFields}
+        }
+      }
+    }
+  `,
 };
 
 const makeApiCall = (query, variables) => {
@@ -74,120 +149,11 @@ const makeApiCall = (query, variables) => {
   );
 };
 
-const hired_transactions_query = ({ from, to }) => {
-  let date = { from, to };
-  if (!Boolean(from) || !Boolean(to)) {
-    let today = new Date();
-    let year = today.getFullYear();
-    let month = today.getMonth() + 1;
-    if (today.getMonth() === 0) {
-      year -= 1;
-      month = 12;
-    }
-    date.to = `${today.getFullYear()}-${today.getMonth() + 1}-${30}`;
-    date.from = `${year}-${month}-${1}`;
-  }
-  return `
-{
-accountant_endpoint{
-  all_transactions(status:"TUTOR_HIRE",_from:${JSON.stringify(
-    date.from
-  )},to:${JSON.stringify(date.to)}) {
-    pk
-    status
-    booking{
-      user{
-        first_name
-        last_name
-        email
-      }
-     
-    }
-    created
-    modified
-    amount
-    transaction_type
-    credit
-    amount_paid
-    total
-  }
-}}
-  `;
-};
-const query = (kind = 'list', param) => {
-  let options = {
-    list: () => `all_withdrawals{${fields}}`,
-    detail: order => `withdrawal_detail(order:${JSON.stringify(order)}){
-      user{
-        email
-      }
-      transactions{
-      pk
-        status
-        created
-        modified
-        amount
-        booking{
-          order
-          status_display
-          first_session
-          last_session
-          made_payment
-          user{
-            email
-          }
-          ts{
-            tutor{
-              email
-            }
-          }
-        }
-        transaction_type
-        credit
-        amount_paid
-        total
-    }}`,
-    transaction_detail: order => `transaction_detail(order:${JSON.stringify(
-      order
-    )}){
-      created
-      modified
-      total
-      pk
-      booking{
-        user{
-          first_name
-          last_name
-          email
-        }
-        transactions{
-          ${transactionFields}
-        }
-      }
-    }`,
-    booking_transactions: order => `booking_transactions(order:${JSON.stringify(
-      order
-    )}){
-           ${transactionFields}
-    }`,
-  };
-  return `
-    {
-  accountant_endpoint {
-    ${options[kind](param)}
-      
-    
-  }
-}
-
-  `;
-};
 function responseCallback(key) {
   return response => response.data.data.accountant_endpoint[key];
 }
 function getAllWithdrawals() {
-  return axios
-    .post(baseUrl, { query: query() })
+  return makeApiCall(queries['all_withdrawals'])
     .then(responseCallback('all_withdrawals'))
     .then(withdrawals => {
       return withdrawals.map(withdrawal => ({
@@ -206,8 +172,7 @@ function getAllWithdrawals() {
 }
 
 function getTransactions(withrawalOrder) {
-  return axios
-    .post(baseUrl, { query: query('detail', withrawalOrder) })
+  return makeApiCall(queries['withdrawal_detail'], { order: withrawalOrder })
     .then(responseCallback('withdrawal_detail'))
     .then(withdrawal =>
       withdrawal.transactions.map(transaction => ({
@@ -241,8 +206,7 @@ function getBookingTransaction({ order, kind }) {
     kind === 'transaction' ? 'transaction_detail' : 'booking_transactions';
   let transform = data =>
     kind === 'transaction' ? data.booking.transactions : data;
-  return axios
-    .post(baseUrl, { query: query(q, order) })
+  return makeApiCall(queries[q], order)
     .then(responseCallback(q))
     .then(transactions => {
       return transform(transactions).map(transactionDetail => ({
@@ -260,9 +224,10 @@ function makePayment(order) {
 
 function getHiredTransactions(props, filterFunc) {
   //props could be dateFilter, searchParam
-  const { from, to } = props.dateFilter;
-  let date = { from, to };
-  if (!Boolean(from) || !Boolean(to)) {
+  let date = {};
+  if (props && props.dateFilter) {
+    date = props.dateFilter;
+  } else {
     let today = new Date();
     let year = today.getFullYear();
     let month = today.getMonth() + 1;
@@ -273,7 +238,11 @@ function getHiredTransactions(props, filterFunc) {
     date.to = `${today.getFullYear()}-${today.getMonth() + 1}-${30}`;
     date.from = `${year}-${month}-${1}`;
   }
-  makeApiCall(queries['hired_transactions_query'], {status: "TUTOR_HIRE", ...date})
+  return makeApiCall(queries['hired_transactions_query'], {
+    status: 'TUTOR_HIRE',
+    _from: date.from,
+    to: date.to,
+  })
     .then(responseCallback('all_transactions'))
     .then(transactions =>
       transactions.map(transaction => {
@@ -291,30 +260,10 @@ function getHiredTransactions(props, filterFunc) {
         };
       })
     );
-  // return axios
-  //   .post(baseUrl, { query: hired_transactions_query(props.dateFilter || {}) })
-  //   .then(responseCallback("all_transactions"))
-  //   .then(transactions =>
-  //     transactions.map(transaction => {
-  //       return {
-  //         order: transaction.pk,
-  //         name:
-  //           transaction.booking &&
-  //           `${transaction.booking.user.first_name} ${
-  //             transaction.booking.user.last_name
-  //           }`,
-  //         email: transaction.booking && transaction.booking.user.email,
-  //         amount: transaction.total,
-  //         date: transaction.created,
-  //         modified: transaction.modified
-  //       };
-  //     })
-  //   );
 }
 
 function getTransactionDetail(props) {
-  return axios
-    .post(baseUrl, { query: query('transaction_detail', props) })
+  return makeApiCall(queries['transaction_detail'], { order: props })
     .then(responseCallback('transaction_detail'))
     .then(transaction => ({
       order: transaction.pk,
@@ -327,10 +276,11 @@ function getTransactionDetail(props) {
       amount: transaction.total,
       date: transaction.created,
       modified: transaction.modified,
+      transactions: transaction.booking.transactions.map(transaction => ({
+        ...transaction,
+        date: transaction.created,
+      })),
     }));
-  // return new Promise(resolve =>
-  // resolve(hiredData.find(x => x.order.toLowerCase() === props.toLowerCase()))
-  // );
 }
 
 function saveVerifications(verifications) {
@@ -351,3 +301,111 @@ export default {
   getTransactionDetail,
   saveVerifications,
 };
+
+// const hired_transactions_query = ({ from, to }) => {
+//   let date = { from, to };
+//   if (!Boolean(from) || !Boolean(to)) {
+//     let today = new Date();
+//     let year = today.getFullYear();
+//     let month = today.getMonth() + 1;
+//     if (today.getMonth() === 0) {
+//       year -= 1;
+//       month = 12;
+//     }
+//     date.to = `${today.getFullYear()}-${today.getMonth() + 1}-${30}`;
+//     date.from = `${year}-${month}-${1}`;
+//   }
+//   return `
+// {
+// accountant_endpoint{
+//   all_transactions(status:"TUTOR_HIRE",_from:${JSON.stringify(
+//     date.from
+//   )},to:${JSON.stringify(date.to)}) {
+//     pk
+//     status
+//     booking{
+//       user{
+//         first_name
+//         last_name
+//         email
+//       }
+
+//     }
+//     created
+//     modified
+//     amount
+//     transaction_type
+//     credit
+//     amount_paid
+//     total
+//   }
+// }}
+//   `;
+// };
+// const query = (kind = 'list', param) => {
+//   let options = {
+//     list: () => `all_withdrawals{${fields}}`,
+//     detail: order => `withdrawal_detail(order:${JSON.stringify(order)}){
+//       user{
+//         email
+//       }
+//       transactions{
+//         pk
+//         status
+//         created
+//         modified
+//         amount
+//         booking{
+//           order
+//           status_display
+//           first_session
+//           last_session
+//           made_payment
+//           user{
+//             email
+//           }
+//           ts{
+//             tutor{
+//               email
+//             }
+//           }
+//         }
+//         transaction_type
+//         credit
+//         amount_paid
+//         total
+//     }}`,
+//     transaction_detail: order => `transaction_detail(order:${JSON.stringify(
+//       order
+//     )}){
+//       created
+//       modified
+//       total
+//       pk
+//       booking{
+//         user{
+//           first_name
+//           last_name
+//           email
+//         }
+//         transactions{
+//           ${transactionFields}
+//         }
+//       }
+//     }`,
+//     booking_transactions: order => `booking_transactions(order:${JSON.stringify(
+//       order
+//     )}){
+//            ${transactionFields}
+//     }`,
+//   };
+//   return `
+//     {
+//   accountant_endpoint {
+//     ${options[kind](param)}
+
+//   }
+// }
+
+//   `;
+// };

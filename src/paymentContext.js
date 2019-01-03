@@ -1,16 +1,16 @@
-import { format } from "date-fns";
+import { format } from 'date-fns';
 
 export const actions = {
-  GET_WITHDRAWALS: "GET_WITHDRAWALS",
-  GET_WITHDRAWAL: "GET_WITHDRAWAL",
-  MAKE_PAYMENT: "MAKE_PAYMENT",
-  GET_BOOKING_TRANSACTION: "GET_BOOKING_TRANSACTION",
-  DELETE_TRANSACTION: "DELETE_TRANSACTIONS",
-  GET_WITHDRAWAL_TRANSACTIONS: "GET_WITHDRAWAL_TRANSACTIONS",
-  GET_HIRED_TRANSACTIONS: "GET_HIRED_TRANSACTIONS",
-  TRANSACTION_DETAIL: "TRANSACTION_DETAIL",
-  GET_VERIFIED_TRANSACTIONS: "GET_VERIFIED_TRANSACTIONS",
-  UPDATE_VERIFICATION: "UPDATE_VERIFICATION"
+  GET_WITHDRAWALS: 'GET_WITHDRAWALS',
+  GET_WITHDRAWAL: 'GET_WITHDRAWAL',
+  MAKE_PAYMENT: 'MAKE_PAYMENT',
+  GET_BOOKING_TRANSACTION: 'GET_BOOKING_TRANSACTION',
+  DELETE_TRANSACTION: 'DELETE_TRANSACTIONS',
+  GET_WITHDRAWAL_TRANSACTIONS: 'GET_WITHDRAWAL_TRANSACTIONS',
+  GET_HIRED_TRANSACTIONS: 'GET_HIRED_TRANSACTIONS',
+  TRANSACTION_DETAIL: 'TRANSACTION_DETAIL',
+  GET_VERIFIED_TRANSACTIONS: 'GET_VERIFIED_TRANSACTIONS',
+  UPDATE_VERIFICATION: 'UPDATE_VERIFICATION',
 };
 const fetchWithdrawals = (refresh, { state, getAdapter, updateState }) => {
   let { withdrawals } = state.context.state;
@@ -37,7 +37,7 @@ const makePayment = (order, { state, getAdapter, updateState }) => {
     .makePayment(order)
     .then(() => {
       updateState({
-        withdrawals: withdrawals.filter(x => x.order !== order)
+        withdrawals: withdrawals.filter(x => x.order !== order),
       });
     })
     .catch(error => {
@@ -51,12 +51,12 @@ const deleteWithdrawal = (order, { state, updateState, getAdapter }) => {
     .deleteWithdrawal(order)
     .then(data => {
       updateState({
-        withdrawals: withdrawals.filter(x => x.order !== order)
+        withdrawals: withdrawals.filter(x => x.order !== order),
       });
     });
 };
-const fetchBookingTransaction = ({order,kind}, { getAdapter }) => {
-  return getAdapter().getBookingTransaction({order,kind});
+const fetchBookingTransaction = ({ order, kind }, { getAdapter }) => {
+  return getAdapter().getBookingTransaction({ order, kind });
 };
 
 const getWithdrawalTransactions = (withdrawal_order, { getAdapter }) => {
@@ -67,14 +67,14 @@ const fetchVerifiedTransactons = (
   local = false,
   { updateState, state }
 ) => {
-  let { verified_transactions, agent = "Biola" } = state.context.state;
+  let { verified_transactions, agent = 'Biola' } = state.context.state;
   if (Object.keys(verified_transactions).length > 0) {
     return new Promise(resolve => resolve(verified_transactions));
   }
-  return firebaseAction("getWorkingData", [agent, {}]).then(data => {
-    let result = Boolean(data) ? data: {}
+  return firebaseAction('getWorkingData', [agent, {}]).then(data => {
+    let result = Boolean(data) ? data : {};
     updateState({
-      verified_transactions: result
+      verified_transactions: result,
     });
     return data;
   });
@@ -105,8 +105,8 @@ const fetchHiredTransactions = (
     getAdapter().getHiredTransactions(rest, transactionVerified),
     fetchVerifiedTransactons(firebaseAction, true, {
       updateState,
-      state
-    })
+      state,
+    }),
   ]).then(data => {
     console.log(data);
     updateState({ hired_transactions: data[0] });
@@ -119,22 +119,24 @@ const getTransactionDetail = (
   { getAdapter, state, updateState }
 ) => {
   let { hired_transactions, verified_transactions } = state.context.state;
-  if(hired_transactions.length > 0){
-  let record = hired_transactions.find(
-    x => x.order.toString().toLowerCase() === order.toLowerCase()
-  );
-  if (Boolean(record)) {
-    return new Promise(resolve => resolve([record, verified_transactions]));
-  }
-    
+  if (
+    hired_transactions.length > 0 &&
+    Object.values(verified_transactions).length > 0
+  ) {
+    let record = hired_transactions.find(
+      x => x.order.toString().toLowerCase() === order.toLowerCase()
+    );
+    if (Boolean(record)) {
+      return new Promise(resolve => resolve([record, verified_transactions]));
+    }
   }
   return Promise.all([
     getAdapter().getTransactionDetail(order),
     fetchVerifiedTransactons(firebaseAction, true, {
       getAdapter,
       updateState,
-      state
-    })
+      state,
+    }),
   ]);
 };
 const deleteTransaction = (order, { getAdapter }) => {
@@ -152,7 +154,7 @@ function getVerificationTransactionDate(verified_transactions, order) {
   return { key: result, index };
 }
 const updateVerification = (firebaseAction, value, { updateState, state }) => {
-  let { verified_transactions, agent = "Biola" } = state.context.state;
+  let { verified_transactions, agent = 'Biola' } = state.context.state;
   let new_transactions = { ...verified_transactions };
   let instance = findTransaction(new_transactions, false)(value.order);
   let { key, index } = getVerificationTransactionDate(
@@ -168,18 +170,18 @@ const updateVerification = (firebaseAction, value, { updateState, state }) => {
             return value;
           }
           return x;
-        })
+        }),
       };
     }
   } else {
     if (!Boolean(key)) {
-      key = format(new Date(), "YYYY-MM-DD");
+      key = format(new Date(), 'YYYY-MM-DD');
     }
     let existingRecordInKey = new_transactions[key] || [];
     new_transactions[key] = [...existingRecordInKey, value];
   }
   updateState({ verified_transactions: new_transactions });
-  return firebaseAction("saveWorkingData", [agent, new_transactions]);
+  return firebaseAction('saveWorkingData', [agent, new_transactions]);
 };
 const dispatch = (action, existingOptions = {}, firebaseFunc) => {
   function firebaseAction(key, args) {
@@ -207,7 +209,7 @@ const dispatch = (action, existingOptions = {}, firebaseFunc) => {
       null,
       firebaseAction
     ),
-    ...existingOptions
+    ...existingOptions,
   };
   return options;
 };
@@ -221,7 +223,7 @@ const componentDidMount = (
   fetchVerifiedTransactons(firebaseAction, true, {
     getAdapter,
     updateState,
-    state
+    state,
   });
 };
 export default {
@@ -231,10 +233,10 @@ export default {
   state: {
     hired_transactions: [],
     verified_transactions: {},
-    withdrawals: []
+    withdrawals: [],
   },
   keys: {
-    analytics: "payment_analytics",
-    storage: "verified_payments"
-  }
+    analytics: 'payment_analytics',
+    storage: 'verified_payments',
+  },
 };
