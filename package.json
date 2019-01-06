@@ -9,7 +9,7 @@
     "react-dom": "^16.6.3",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.1",
-    "tuteria-shared": "gbozee/Shared-Admin-Lib#9461e10"
+    "tuteria-shared": "gbozee/Shared-Admin-Lib#3bbce4a"
   },
   "scripts": {
     "start": "react-scripts start",
