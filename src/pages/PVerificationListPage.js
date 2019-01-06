@@ -2,52 +2,52 @@
 import { css, jsx } from "@emotion/core";
 import { Box, Flex, Text } from "@rebass/emotion";
 import React from "react";
-import { AsLink, SectionListPage } from "./reusables";
+import { AsLink, SectionListPage,PVerificationListItem } from "./reusables";
 import Link from "react-router-dom/Link";
 import { DataContext } from "tuteria-shared/lib/shared/DataContext";
 import { DateFilter } from "tuteria-shared/lib/shared/DateFilter";
 import { SpinnerContainer } from "tuteria-shared/lib/shared/primitives/Spinner";
 import queryString from "query-string";
 import { filterHelper } from "../adapters";
-export const PVerificationListItem = ({
-  heading,
-  subHeading,
-  date,
-  rightSection,
-  verified = false,
-  to,
-  ...rest
-}) => {
-  return (
-    <AsLink to={to} {...rest}>
-      <Flex
-        py={3}
-        px={2}
-        width={1}
-        justifyContent="space-between"
-        css={css`
-          border-bottom: 1px solid black;
-        `}
-      >
-        <Box>
-          <Text>{date}</Text>
-          <Text fontSize={5}>{heading}</Text>
-          <Text>{subHeading}</Text>
-        </Box>
-        <Flex
-          flexDirection="column"
-          css={css`
-            align-self: center;
-            align-items: center;
-          `}
-        >
-          <Box>{rightSection}</Box>
-          {verified && <Text>✔</Text>}
-        </Flex>
-      </Flex>
-    </AsLink>
-  );
-};
+// export const PVerificationListItem = ({
+//   heading,
+//   subHeading,
+//   date,
+//   rightSection,
+//   verified = false,
+//   to,
+//   ...rest
+// }) => {
+//   return (
+//     <AsLink to={to} {...rest}>
+//       <Flex
+//         py={3}
+//         px={2}
+//         width={1}
+//         justifyContent="space-between"
+//         css={css`
+//           border-bottom: 1px solid black;
+//         `}
+//       >
+//         <Box>
+//           <Text>{date}</Text>
+//           <Text fontSize={5}>{heading}</Text>
+//           <Text>{subHeading}</Text>
+//         </Box>
+//         <Flex
+//           flexDirection="column"
+//           css={css`
+//             align-self: center;
+//             align-items: center;
+//           `}
+//         >
+//           <Box>{rightSection}</Box>
+//           {verified && <Text>✔</Text>}
+//         </Flex>
+//       </Flex>
+//     </AsLink>
+//   );
+// };
 
 export class PVerificationListPage extends React.Component {
   static contextType = DataContext;

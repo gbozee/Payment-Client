@@ -1,4 +1,3 @@
-import { saveFragment } from "tuteria-shared/lib/shared/localStorage";
 import LiveData from "./live"
 
 
@@ -11,11 +10,11 @@ function getTransactions(withdrawOrder) {
 }
 
 function deleteTransaction(order) {
-  return new Promise(resolve => resolve({}));
+  return LiveData.deleteTransaction(order)
 }
 
 function deleteWithdrawal(order) {
-  return new Promise(resolve => resolve());
+  return LiveData.deleteWithdrawal(order)
 }
 
 function getBookingTransaction(transactionOrder) {
@@ -23,7 +22,7 @@ function getBookingTransaction(transactionOrder) {
 }
 
 function makePayment(order) {
-  return new Promise(resolve => resolve({}));
+  return LiveData.makePayment(order)
 }
 
 function getHiredTransactions(props, filterFunc) {
@@ -34,12 +33,6 @@ function getTransactionDetail(props) {
   return LiveData.getTransactionDetail(props)
 }
 
-
-function saveVerifications(verifications) {
-  saveFragment({
-    VERIFICATIONS: verifications
-  });
-}
 
 
 export default {
@@ -52,5 +45,4 @@ export default {
   makePayment,
   getHiredTransactions,
   getTransactionDetail,
-  saveVerifications,
 };

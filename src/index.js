@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import * as serviceWorker from "./serviceWorker";
 import { css, jsx } from "@emotion/core";
 import { Flex } from "@rebass/emotion";
-import {Redirect, Link } from 'react-router-dom'
+import { Redirect, Link, BrowserRouter } from "react-router-dom";
 import ProtectedRoute from "tuteria-shared/lib/shared/ProtectedRoute";
 import devAdapter from "./adapters/devProd";
 import WithRouter from "tuteria-shared/lib/shared/PageSetup";
@@ -14,19 +14,20 @@ import appContext from "./paymentContext";
 
 const WDetailPage = React.lazy(() => import("./pages/WDetailPage"));
 const WListPage = React.lazy(() => import("./pages/WListPage"));
-const PVerificationDetailPage = React.lazy(() =>
-  import(`./pages/PVerificationDetailPage`)
-);
-const VTransactionPage = React.lazy(() => import(`./pages/VTransactionPage`));
-const PVerificationListPage = React.lazy(() =>
-  import(`./pages/PVerificationListPage`)
-);
+// const PVerificationDetailPage = React.lazy(() =>
+//   import(`./pages/PVerificationDetailPage`)
+// );
+// const VTransactionPage = React.lazy(() => import(`./pages/VTransactionPage`));
+// const PVerificationListPage = React.lazy(() =>
+//   import(`./pages/PVerificationListPage`)
+// );
 
 function App() {
   return (
     <WithRouter
       adapter={devAdapter}
       context={appContext}
+      RouterComponent={BrowserRouter}
       // firebase={appFirebase}
       toNextPage={props => props.history.push("/withdrawals")}
       heading={
@@ -47,7 +48,7 @@ function App() {
         </Flex>
       }
     >
-      <ProtectedRoute
+      {/* <ProtectedRoute
         path="/payment-verifications"
         exact
         render={props => {
@@ -58,8 +59,8 @@ function App() {
             />
           );
         }}
-      />
-      <ProtectedRoute
+      /> */}
+      {/* <ProtectedRoute
         path="/verified-transactions"
         exact
         render={props => {
@@ -76,20 +77,20 @@ function App() {
         render={props => {
           return <PVerificationDetailPage {...props} />;
         }}
-      />
+      /> */}
       <ProtectedRoute
         path="/withdrawals"
         exact
-        render={() => {
+        render={(props) => {
           return (
-            <WListPage
+            <WListPage {...props}
               detailPageUrl={order => `/withdrawals/${order}/transactions`}
             />
           );
         }}
       />
       <ProtectedRoute path="/withdrawals/:order" component={WDetailPage} />
-     
+
       <Redirect to="/withdrawals" />
     </WithRouter>
   );

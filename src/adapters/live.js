@@ -1,35 +1,36 @@
 import axios from "axios";
 
 let baseUrl = process.env.REACT_APP_ENDPOINT_URL;
-let fields = `user {
-        email
-        first_name
-        last_name
-        primary_phone_no{
-          number
-        }
-        wallet{
-          amount_available
-        }
-      }
-      amount
-      order
-      created
-      payout {
-        account_id
-        account_name
-        bank
-      }`;
+let fields = `
+user {
+    email
+    first_name
+    last_name
+    primary_phone_no{
+      number
+    }
+    wallet{
+      amount_available
+    }
+  }
+  amount
+  order
+  created
+  payout {
+    account_id
+    account_name
+    bank
+  }`;
 let transactionFields = `
-pk
-          status
-          created
-          modified
-          amount
-          transaction_type
-          credit
-          amount_paid
-          total
+  pk
+  status
+  created
+  modified
+  amount
+  transaction_type
+  credit
+  amount_paid
+  total
 `;
 const hired_transactions_query = ({ from, to }) => {
   let date = { from, to };
@@ -71,6 +72,23 @@ accountant_endpoint{
 }}
   `;
 };
+const mutation = (order, action, mtt = "delete_actions") => {
+  let options = {
+    delete_actions: `account_delete_actions(order:${JSON.stringify(
+      order
+    )},action:${JSON.stringify(action)})`,
+    make_payment: `make_tutor_payment(order:${JSON.stringify(
+      order
+    )},test:${action})`
+  };
+  return `
+  mutation{
+    ${options[mtt]}{
+      status
+    }
+  }
+  `;
+};
 const query = (kind = "list", param) => {
   let options = {
     list: () => `all_withdrawals{${fields}}`,
@@ -104,36 +122,31 @@ const query = (kind = "list", param) => {
         amount_paid
         total
     }}`,
-    transaction_detail: order => `transaction_detail(order:${JSON.stringify(
-      order
-    )}){
-      created
-      modified
-      total
-      pk
-      booking{
-        user{
-          first_name
-          last_name
-          email
+    transaction_detail: order => `
+      transaction_detail(order:${JSON.stringify(order)}){
+        created
+        modified
+        total
+        pk
+        booking{
+          user{
+            first_name
+            last_name
+            email
+          }
+          transactions{
+            ${transactionFields}
+          }
         }
-        transactions{
-          ${transactionFields}
-        }
-      }
-    }`,
-    booking_transactions: order => `booking_transactions(order:${JSON.stringify(
-      order
-    )}){
-           ${transactionFields}
-    }`
+      }`,
+    booking_transactions: order => `
+      booking_transactions(order:${JSON.stringify(order)}){
+        ${transactionFields}
+      }`
   };
-  return `
-    {
+  return `{
   accountant_endpoint {
     ${options[kind](param)}
-      
-    
   }
 }
 
@@ -141,6 +154,9 @@ const query = (kind = "list", param) => {
 };
 function responseCallback(key) {
   return response => response.data.data.accountant_endpoint[key];
+}
+function mutationCallback(key) {
+  return response => response.data.data[key];
 }
 function getAllWithdrawals() {
   return axios
@@ -186,11 +202,17 @@ function getTransactions(withrawalOrder) {
 }
 
 function deleteTransaction(order) {
-  return new Promise(resolve => resolve({}));
+  return axios
+    .post(baseUrl, { query: mutation(order, "delete_transaction") })
+    .then(responseCallback("delete_actions"))
+    .then(() => ({}));
 }
 
 function deleteWithdrawal(order) {
-  return new Promise(resolve => resolve());
+  return axios
+    .post(baseUrl, { query: mutation(order, "delete_withdrawal") })
+    .then(responseCallback("delete_actions"))
+    .then(() => ({}));
 }
 function getBookingTransaction({ order, kind }) {
   console.log({ kind });
@@ -212,7 +234,12 @@ function getBookingTransaction({ order, kind }) {
 }
 
 function makePayment(order) {
-  return new Promise(resolve => resolve({}));
+  return axios
+    .post(baseUrl, {
+      query: mutation(order, false, "make_payment")
+    })
+    .then(mutationCallback("make_payment"))
+    .then(data => ({}));
 }
 
 function getHiredTransactions(props, filterFunc) {
@@ -240,7 +267,7 @@ function getHiredTransactions(props, filterFunc) {
 
 function getTransactionDetail(props) {
   return axios
-    .post(baseUrl, {query:query("transaction_detail", props)})
+    .post(baseUrl, { query: query("transaction_detail", props) })
     .then(responseCallback("transaction_detail"))
     .then(transaction => ({
       order: transaction.pk,
@@ -254,17 +281,7 @@ function getTransactionDetail(props) {
       date: transaction.created,
       modified: transaction.modified
     }));
-  // return new Promise(resolve =>
-  // resolve(hiredData.find(x => x.order.toLowerCase() === props.toLowerCase()))
-  // );
 }
-
-function saveVerifications(verifications) {
-  // saveFragment({
-  //   VERIFICATIONS: verifications
-  // });
-}
-
 
 export default {
   //payment data
@@ -275,6 +292,5 @@ export default {
   deleteWithdrawal,
   makePayment,
   getHiredTransactions,
-  getTransactionDetail,
-  saveVerifications
+  getTransactionDetail
 };
