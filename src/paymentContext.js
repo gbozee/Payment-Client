@@ -1,10 +1,11 @@
 import { format } from "date-fns";
 import Paystack from "tuteria-shared/lib/shared/adapters/paystack";
+let isDev = () =>
+  process.env.NODE_ENV !== "development" ? "production" : "dev";
 const paystack = Paystack(
   "https://paystack-graphql-server.now.sh",
   process.env.REACT_APP_PAYSTACK_PUBLIC_KEY,
-  // "production"
-  process.env.NODE_ENV !== "development" ? "production" : "dev"
+  isDev()
 );
 export const actions = {
   GET_WITHDRAWALS: "GET_WITHDRAWALS",
