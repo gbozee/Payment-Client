@@ -12,8 +12,10 @@ import appContext from "./paymentContext";
 // import appFirebase from "./adapters/backupFirebase";
 // import WithRouter from "./shared/PageSetup";
 
-const WDetailPage = React.lazy(() => import("./pages/WDetailPage"));
-const WListPage = React.lazy(() => import("./pages/WListPage"));
+const WDetailPage = React.lazy(() =>
+  import("tuteria-shared/lib/pages/WDetailPage")
+);
+const WListPage = React.lazy(() => import("tuteria-shared/lib/pages/WListPage"));
 // const PVerificationDetailPage = React.lazy(() =>
 //   import(`./pages/PVerificationDetailPage`)
 // );
@@ -81,9 +83,10 @@ function App() {
       <ProtectedRoute
         path="/withdrawals"
         exact
-        render={(props) => {
+        render={props => {
           return (
-            <WListPage {...props}
+            <WListPage
+              {...props}
               detailPageUrl={order => `/withdrawals/${order}/transactions`}
             />
           );
